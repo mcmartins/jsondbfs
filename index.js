@@ -30,11 +30,17 @@ var path = require('path'),
   Collection = require('./collection'),
   msg = require('./messages.json');
 
+/**
+ * Creates the collections json files in the specified path.
+ * 
+ * @returns Connection object
+ * 
+ */
 module.exports.connect = function(path, collections, callback) {
   var self = this;
   self._db = {};
   async.waterfall([
-    function createDBFile(next) {
+    function validatePath(next) {
       fs.exists(path, function(exists) {
         if (!exists) {
           console.log(msg.connect_error_db_path, path);
@@ -45,17 +51,21 @@ module.exports.connect = function(path, collections, callback) {
         return next();
       });
     },
-    function loadCollections() {
+    function createCollections() {
+      // FIXME replace this with underscore.js isArray
       if (typeof collections === 'object' && collections.length) {
+       // FIXME must be asynchronous and in parallel
         for (var i = 0; i < collections.length; i++) {
-          var p = path.join(this._db.path, (collections[i].indexOf(
+          var p = path.join(self._db.path, (collections[i].indexOf(
               '.json') >= 0 ? collections[i] : collections[i] +
             '.json'));
+          // FIXME must be asynchronous
           if (!util.isValidPath(p)) {
+           // FIXME must be asynchronous
             util.writeToFile(p);
           }
           var _c = collections[i].replace('.json', '');
-          this[_c] = new Collection(this, _c);
+          self[_c] = new Collection(self, _c);
         }
       } else {
         console.log(msg.invalid_connection_array);
