@@ -2,7 +2,8 @@
  * (C) Copyright 2015 Manuel Martins.
  *
  * This module is inspired by json_file_system.
- * json_file_system is Copyright (c) 2014 Jalal Hejazi, Licensed under the MIT license.
+ * (json_file_system is Copyright (c) 2014 Jalal Hejazi,
+ *  Licensed under the MIT license.)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,59 +21,77 @@
  * Created on: 11-09-2015
  *
  */
- 
+
 'use strict';
 
 var path = require('path'),
   fs = require('fs'),
+  _ = require('underscore'),
   async = require('async'),
-  util = require('./util'),
-  Collection = require('./collection'),
-  msg = require('./messages.json');
+  Collection = require('./lib/collection'),
+  resources = require('./lib/resources.json');
 
 /**
- * Creates the collections json files in the specified path.
- * 
- * @returns Connection object
- * 
+ *
+ * @param options
+ * @constructor
  */
-module.exports.connect = function(path, collections, callback) {
+function JSONDBFS(options) {
+  options = options || {};
+  this._inMemory = options.inMemory || false;
+  this._path = options.path || '/tmp/';
+}
+
+/**
+ *
+ * @param collections
+ * @param callback
+ */
+JSONDBFS.prototype.connect = function (collections, callback) {
   var self = this;
   self._db = {};
   async.waterfall([
     function validatePath(next) {
-      fs.exists(path, function(exists) {
+      fs.exists(self._path, function check(exists) {
         if (!exists) {
-          console.log(msg.connect_error_db_path, path);
-          return callback(new Error(msg.connect_error_db_path));
+          console.log(resources.CONNECTION.INVALID_PATH + self._path);
+          return callback(new Error(resources.CONNECTION.INVALID_PATH + self._path));
         }
-        self._db.path = path;
-        console.log(msg.connect_success + path);
+        self._db.path = self._path;
+        console.log(resources.CONNECTION.SUCCESS + self._path);
         return next();
       });
     },
     function createCollections() {
-      // FIXME replace this with underscore.js isArray
-      if (typeof collections === 'object' && collections.length) {
-       // FIXME must be asynchronous and in parallel
-        for (var i = 0; i < collections.length; i++) {
-          var p = path.join(self._db.path, (collections[i].indexOf(
-              '.json') >= 0 ? collections[i] : collections[i] +
-            '.json'));
-          // FIXME must be asynchronous
-          if (!util.isValidPath(p)) {
-           // FIXME must be asynchronous
-            util.writeToFile(p);
+      if (_.isArray(collections)) {
+        async.each(collections, function create(collection, next) {
+          var fullPath = path.join(self._path, collection + '.json');
+          fs.exists(fullPath, function check(exists) {
+            if (!exists) {
+              fs.writeFile(fullPath, '[]', function errorHandler(err) {
+                if (err) {
+                  next(err);
+                }
+              });
+            }
+            self[collection] = new Collection({db: self, path: fullPath, inMemory: self._inMemory});
+            console.log(resources.CONNECTION.COLLECTION_CREATED + collection);
+            next();
+          });
+        }, function finalize(err) {
+          if (err) {
+            console.log(resources.CONNECTION.INVALID_COLLECTION_NAME);
+            return callback(err);
+          } else {
+            return callback(null, self);
           }
-          var _c = collections[i].replace('.json', '');
-          self[_c] = new Collection(self, _c);
-        }
+        });
       } else {
-        console.log(msg.invalid_connection_array);
-        return callback(new Error(msg.invalid_connection_array));
+        console.log(resources.CONNECTION.INVALID_COLLECTION_NAME);
+        return callback(new Error(resources.CONNECTION.INVALID_COLLECTION_NAME));
       }
-      console.log(msg.collections_loaded);
-      return callback(null, self);
     }
   ]);
 };
+
+module.exports = JSONDBFS;
