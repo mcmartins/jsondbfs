@@ -29,7 +29,8 @@ var path = require('path'),
   _ = require('underscore'),
   async = require('async'),
   Collection = require('./lib/collection'),
-  resources = require('./lib/resources.json');
+  resources = require('./lib/resources.json'),
+  IOHandler = require('./handler')
 
 /**
  *
@@ -40,6 +41,7 @@ function JSONDBFS(options) {
   options = options || {};
   this._inMemory = options.inMemory || false;
   this._path = options.path || '/tmp/';
+  this._ioHandler = new IOHandler(options);
 }
 
 /**
