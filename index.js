@@ -29,7 +29,7 @@ var path = require('path'),
   _ = require('underscore'),
   async = require('async'),
   Collection = require('./lib/collection'),
-  resources = require('./lib/resources.json')
+  resources = require('./lib/resources.json');
 
 /**
  *
