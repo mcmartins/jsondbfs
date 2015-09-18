@@ -25,24 +25,29 @@
 'use strict';
 
 var path = require('path'),
-  fs = require('fs'),
   _ = require('underscore'),
   async = require('async'),
   Collection = require('./lib/collection'),
-  resources = require('./lib/resources.json');
+  resources = require('./lib/resources.json'),
+  IOHandler = require('./lib/ioHandler');
 
 /**
+ * JSON DB FS Main entry point
  *
- * @param options
+ * @param {Object} options
+ *        {String} options.path
+ *        {String} options.inMemory
  * @constructor
  */
 function JSONDBFS(options) {
   options = options || {};
-  this._inMemory = options.inMemory || false;
   this._path = options.path || '/tmp/';
+  this._inMemory = options.inMemory || false;
+  this._ioHandler = new IOHandler(options);
 }
 
 /**
+ * Initializes a connection to the specified collections.
  *
  * @param collections
  * @param callback
@@ -52,13 +57,14 @@ JSONDBFS.prototype.connect = function (collections, callback) {
   self._db = {};
   async.waterfall([
     function validatePath(next) {
-      fs.exists(self._path, function check(exists) {
+      self._ioHandler.pathExists(self._path, function afterCheck(exists) {
         if (!exists) {
           console.log(resources.CONNECTION.INVALID_PATH + self._path);
           return callback(new Error(resources.CONNECTION.INVALID_PATH + self._path));
         }
         self._db.path = self._path;
-        console.log(resources.CONNECTION.SUCCESS + self._path);
+        self._db._inMemory = self._inMemory;
+        self._db._ioHandler = self._ioHandler;
         return next();
       });
     },
@@ -67,13 +73,14 @@ JSONDBFS.prototype.connect = function (collections, callback) {
         async.each(collections, function create(collection, next) {
           var fullPath = path.join(self._path, collection + '.json');
           console.log(resources.CONNECTION.COLLECTION_CREATED + collection);
-          self[collection] = new Collection({db: self, path: fullPath, inMemory: self._inMemory});
-          fs.exists(fullPath, function check(exists) {
+          self[collection] = new Collection({db: self, path: fullPath});
+          self._ioHandler.pathExists(fullPath, function afterCheck(exists) {
             if (!exists) {
-              fs.writeFile(fullPath, '[]', function errorHandler(err) {
+              self._ioHandler.writeFile(fullPath, function afterWriteFile(err) {
                 return next(err);
               });
             } else {
+              // the file exists we're good to go
               return next();
             }
           });
@@ -82,6 +89,7 @@ JSONDBFS.prototype.connect = function (collections, callback) {
             console.log(resources.CONNECTION.INVALID_COLLECTION_NAME);
             return callback(err);
           } else {
+            console.log(resources.CONNECTION.SUCCESS + self._path);
             return callback(null, self);
           }
         });

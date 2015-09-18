@@ -19,14 +19,17 @@
  */
 
 var JSONDBFS = require('../index'),
-    assert = require('assert');
+  assert = require('assert');
 
+/**
+ * JSON DB FS Test Specification
+ */
 describe('JSONDBFS Driver', function testSpec() {
 
   before(function (done) {
     done();
   });
-  
+
   it('should create a new collection', function test(done) {
     assert(false, true);
     done();
