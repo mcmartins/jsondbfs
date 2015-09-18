@@ -66,17 +66,16 @@ JSONDBFS.prototype.connect = function (collections, callback) {
       if (_.isArray(collections)) {
         async.each(collections, function create(collection, next) {
           var fullPath = path.join(self._path, collection + '.json');
+          console.log(resources.CONNECTION.COLLECTION_CREATED + collection);
+          self[collection] = new Collection({db: self, path: fullPath, inMemory: self._inMemory});
           fs.exists(fullPath, function check(exists) {
             if (!exists) {
               fs.writeFile(fullPath, '[]', function errorHandler(err) {
-                if (err) {
-                  next(err);
-                }
+                return next(err);
               });
+            } else {
+              return next();
             }
-            self[collection] = new Collection({db: self, path: fullPath, inMemory: self._inMemory});
-            console.log(resources.CONNECTION.COLLECTION_CREATED + collection);
-            next();
           });
         }, function finalize(err) {
           if (err) {
