@@ -24,13 +24,16 @@
     "inmemory"
   ],
   "dependencies": {
-    "node-uuid": ">=1.4.3",
-    "underscore": ">=1.8.3",
-    "async": ">=1.4.2"
+    "node-uuid": "*",
+    "underscore": "*",
+    "async": "*",
+    "babel": "*",
+    "lockfile": "*",
+    "json-criteria": "*"
   },
   "devDependencies": {
-    "codeclimate-test-reporter": ">=0.1.0",
-    "istanbul": ">=0.3.17",
-    "mocha": ">=2.2.5"
+    "codeclimate-test-reporter": "*",
+    "istanbul": "*",
+    "mocha": "*"
   }
 }

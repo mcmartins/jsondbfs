@@ -62,7 +62,7 @@ JSONDBFS.prototype.connect = function (collections, callback) {
           console.log(resources.CONNECTION.INVALID_PATH + self._path);
           return callback(new Error(resources.CONNECTION.INVALID_PATH + self._path));
         }
-        self._db.path = self._path;
+        self._db._path = self._path;
         self._db._inMemory = self._inMemory;
         self._db._ioHandler = self._ioHandler;
         return next();

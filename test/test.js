@@ -27,6 +27,30 @@ var JSONDBFS = require('../index'),
 describe('JSONDBFS Driver', function testSpec() {
 
   before(function (done) {
+    var JSONDriver = new JSONDBFS({path: 'C:\\Users\\Manuel\\Desktop'});
+    JSONDriver.connect(['TESTE'], function(err, db){
+      console.log(db);
+      db.TESTE.insert({teste: 'test data 1'}, function(err){
+        db.TESTE.insert({teste: 'test data 2'}, function(err){
+          db.TESTE.findOne({teste: 'test data 2'}, function(err, c){
+            console.log('1'+c);
+            db.TESTE.find({teste: 'test data 2'}, function(err, c){
+              console.log('2'+c);
+              db.TESTE.count(function(err, c){
+                console.log('count'+c);
+                db.TESTE.update({teste: 'test data 1'}, {teste: 'test data 3'},  {multi: true}, function(err, ret){
+                  console.log(err);
+                  console.log(ret);
+                  db.TESTE.remove({teste: 'test data 1'}, {multi: true}, function(err){
+
+                  })
+                })
+              });
+            });
+          });
+        });
+      });
+    });
     done();
   });
 
