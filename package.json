@@ -2,7 +2,7 @@
   "name": "jsondbfs",
   "description": "JSON Filesystem Database.",
   "author": "Manuel Martins <manuelmachadomartins@gmail.com>",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "Apache-2.0",
   "engine": "node >= 0.12.0",
   "main": "./index",

@@ -10,9 +10,9 @@
 
 # README
 
-JSON FileSystem Database is a JSON database such as MongoDB backed by IO FileSystem operations.<br/>
+JSON FileSystem Database is a JSON database such as MongoDB backed by FileSystem IO.<br/>
 Implemented with **Pessimistic Transaction Locking** approach.<br/>
-All methods are asynchronous and access / filtering is executed in parallel using [async](https://github.com/caolan/async).<br/>
+All methods are asynchronous and accessing / filtering is executed in parallel using [async](https://github.com/caolan/async).<br/>
 Based on [Jalalhejazi](https://github.com/Jalalhejazi), [jsonfs](https://github.com/Jalalhejazi/jsonfs).
 
 # Dependencies
@@ -65,6 +65,16 @@ var database,
     ...
   });
 ```
+
+# Options
+
+```javascript
+var Driver = new JSONDBFS({path: '/path/to/store/collections', inMemory: true});
+...
+database.Collection.update(criteria, updateCriteria, {upsert: false, multi: true}, callback);
+```
+
+Please check the implementation ands tests for more details.
 
 # License
 
