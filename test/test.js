@@ -19,7 +19,8 @@
  */
 
 var JSONDBFS = require('../index'),
-  assert = require('assert');
+  assert = require('assert'),
+  JSONDriver, database;
 
 /**
  * JSON DB FS Test Specification
@@ -27,41 +28,102 @@ var JSONDBFS = require('../index'),
 describe('JSONDBFS Driver', function testSpec() {
 
   before(function (done) {
-    var JSONDriver = new JSONDBFS({path: 'C:\\Users\\Manuel\\Desktop'});
-    JSONDriver.connect(['TESTE'], function(err, db){
-      console.log(db);
-      db.TESTE.insert({teste: 'test data 1'}, function(err){
-        db.TESTE.insert({teste: 'test data 2'}, function(err){
-          db.TESTE.findOne({teste: 'test data 2'}, function(err, c){
-            console.log('1'+c);
-            db.TESTE.find({teste: 'test data 2'}, function(err, c){
-              console.log('2'+c);
-              db.TESTE.count(function(err, c){
-                console.log('count'+c);
-                db.TESTE.update({teste: 'test data 1'}, {teste: 'test data 3'},  {multi: true}, function(err, ret){
-                  console.log(err);
-                  console.log(ret);
-                  db.TESTE.remove({teste: 'test data 1'}, {multi: true}, function(err){
-
-                  })
-                })
-              });
-            });
-          });
-        });
-      });
-    });
+    JSONDriver = new JSONDBFS({path: 'C:\\Users\\Manuel\\Desktop'});
     done();
   });
 
   it('should create a new collection', function test(done) {
-    assert(false, true);
-    done();
+    JSONDriver.connect(['Users'], function(err, db){
+      assert.equal(err, undefined);
+      assert.notEqual(db, undefined);
+      console.log('Database Object: ' + db);
+      database = db;
+      done();
+    });
   });
 
   it('should insert a new object', function test(done) {
-    assert(false, true);
-    done();
+    database['Users'].insert({name: 'Manuel', roles: ['Admin', 'Super']}, function(err){
+      assert.equal(err, undefined);
+      done();
+    });
+  });
+
+  it('should count the number of objects', function test(done) {
+    database['Users'].count(function(err, count){
+      assert(count, 1);
+      done();
+    });
+  });
+
+  it('should update an object', function test(done) {
+    database['Users'].update({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function(err, ret){
+      assert.equal(ret.nMatched, 1);
+      done();
+    });
+  });
+
+  it('should count the number of objects', function test(done) {
+    database['Users'].count(function(err, count){
+      assert(count, 1);
+      done();
+    });
+  });
+
+  it('should insert another object', function test(done) {
+    database['Users'].insert({name: 'John', roles: ['User']}, function(err){
+      assert.equal(err, undefined);
+      done();
+    });
+  });
+
+  it('should count the number of objects', function test(done) {
+    database['Users'].count(function(err, count){
+      assert.equal(err, undefined);
+      assert(count, 2);
+      done();
+    });
+  });
+
+  it('should find all users', function test(done) {
+    database['Users'].find(function(err, documents){
+      assert.equal(err, undefined);
+      assert(documents.length, 2);
+      console.log(documents);
+      done();
+    });
+  });
+
+  it('should find a particular user', function test(done) {
+    database['Users'].find({name: 'John'},function(err, documents){
+      assert.equal(err, undefined);
+      assert(documents.length, 1);
+      console.log(documents);
+      done();
+    });
+  });
+
+  it('should find a particular user', function test(done) {
+    database['Users'].findOne({name: 'John'},function(err, user){
+      assert.equal(err, undefined);
+      assert.notEqual(user, null);
+      console.log(user);
+      done();
+    });
+  });
+
+  it('should remove an object', function test(done) {
+    database['Users'].remove({name: 'John'}, function(err){
+      assert.equal(err, undefined);
+      done();
+    });
+  });
+
+  it('should remove an object', function test(done) {
+    database['Users'].remove({name: 'Manuel Martins'}, function(err){
+      assert.equal(err, undefined);
+      done();
+    });
   });
 
 });

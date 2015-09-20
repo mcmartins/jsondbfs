@@ -16,12 +16,19 @@
   "bugs": {
     "url": "https://github.com/mcmartins/jsondbfs/issues"
   },
+  "preferGlobal": "true",
   "keywords": [
     "json",
     "jsondbfs",
     "db",
     "nosql",
-    "inmemory"
+    "inmemory",
+    "jsonfs",
+    "JSON",
+    "Database",
+    "file system",
+    "CRUD",
+    "mongodb"
   ],
   "dependencies": {
     "node-uuid": "*",
