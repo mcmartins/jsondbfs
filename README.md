@@ -5,8 +5,8 @@
 [![Code Climate](https://codeclimate.com/github/mcmartins/jsondbfs/badges/gpa.svg)](https://codeclimate.com/github/mcmartins/jsondbfs)
 [![Dependency Status](https://gemnasium.com/mcmartins/jsondbfs.png)](https://gemnasium.com/mcmartins/jsondbfs)
 
-[![NPM version](http://img.shields.io/npm/v/mcmartins/jsondbfs.svg?style=flat)](https://www.npmjs.com/package/mcmartins/jsondbfs)
-[![NPM downloads](http://img.shields.io/npm/dm/mcmartins/jsondbfs.svg?style=flat)](https://www.npmjs.com/package/mcmartins/jsondbfs)
+[![NPM version](http://img.shields.io/npm/v/jsondbfs.svg?style=flat)](https://www.npmjs.com/package/jsondbfs)
+[![NPM downloads](http://img.shields.io/npm/dm/jsondbfs.svg?style=flat)](https://www.npmjs.com/package/jsondbfs)
 
 # README
 

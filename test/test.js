@@ -112,6 +112,32 @@ describe('JSONDBFS Driver', function testSpec() {
     });
   });
 
+  it('should find a particular user and update', function test(done) {
+    database['Users'].findAndModify({name: 'Manuel Martins'}, {name: 'Manuel Martins', token: null}, function(err, ret){
+      assert.equal(err, undefined);
+      assert.notEqual(ret, null);
+      console.log(ret);
+      done();
+    });
+  });
+
+  it('should insert if document is not found to update', function test(done) {
+    database['Users'].update({name: 'Manuel'}, {name: 'Manuel Martins', token: null}, {upsert: true}, function(err, ret){
+      assert.equal(err, undefined);
+      assert.notEqual(ret, null);
+      console.log(ret);
+      done();
+    });
+  });
+
+  it('should count the number of objects', function test(done) {
+    database['Users'].count({name: 'John'}, function(err, count){
+      assert.equal(err, undefined);
+      assert(count, 1);
+      done();
+    });
+  });
+
   it('should remove an object', function test(done) {
     database['Users'].remove({name: 'John'}, function(err){
       assert.equal(err, undefined);
