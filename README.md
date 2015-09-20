@@ -26,19 +26,23 @@ Criteria queries on JSON objects Mongo style [json-criteria](https://github.com/
 # API
 
 ```javascript
-var JSONDBFS = require('../index'),
-  JSONDriver = new JSONDBFS(),
-  database;
-
+var database,
+  JSONDBFS = require('../index'),
+  JSONDriver = new JSONDBFS({path: '/path/to/store/collections'});
+  
+  // receives an array containing the collections you want to create / use ['Users', 'Others']
   JSONDriver.connect(['Users'], function(err, db){
     database = db;
   });
 
+  // the collection can be accessed by doing: 'database['Users'].insert' or 'database.Users.insert'
   database['Users'].insert({name: 'Manuel', roles: ['Admin', 'Super']}, function(err){
     ...
   });
 
   database['Users'].count(function(err, count){
+    // returns the lenth of the collection
+    // with criteria returns the number of documents matching that criteria
     ...
   });
 
@@ -47,14 +51,17 @@ var JSONDBFS = require('../index'),
   });
 
   database['Users'].find(function(err, documents){
+    // returns everything since there is no criteria specified
     ...
   });
 
   database['Users'].find({name: 'John'},function(err, documents){
+    // returns an array with the elements that match the criteria
     ...
   });
 
   database['Users'].findOne({name: 'John'},function(err, document){
+    // returns the first document that matches the criteria
     ...
   });
 ```
