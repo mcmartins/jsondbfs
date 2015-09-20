@@ -13,7 +13,7 @@
 JSON FileSystem Database is a JSON database such as MongoDB backed by IO FileSystem operations.<br/>
 Implemented with **Pessimistic Transaction Locking** approach.<br/>
 All methods are asynchronous and access / filtering is executed in parallel using [async](https://github.com/caolan/async).<br/>
-Based on [Jalalhejazi](https://github.com/Jalalhejazi) [jsonfs](https://github.com/Jalalhejazi/jsonfs).
+Based on [Jalalhejazi](https://github.com/Jalalhejazi), [jsonfs](https://github.com/Jalalhejazi/jsonfs).
 
 # Dependencies
 
@@ -43,7 +43,7 @@ var JSONDBFS = require('../index'),
   });
 
   database['Users'].update({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function(err, result){
-    // { nMatched: 1, nModified: 1, nUpserted: 0 }
+    // result is { nMatched: 1, nModified: 1, nUpserted: 0 }
   });
 
   database['Users'].find(function(err, documents){
