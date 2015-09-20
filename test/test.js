@@ -28,7 +28,7 @@ var JSONDBFS = require('../index'),
 describe('JSONDBFS Driver', function testSpec() {
 
   before(function (done) {
-    JSONDriver = new JSONDBFS({path: 'C:\\Users\\Manuel\\Desktop'});
+    JSONDriver = new JSONDBFS();
     done();
   });
 
