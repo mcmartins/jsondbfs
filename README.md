@@ -10,7 +10,7 @@
 
 # README
 
-JSON FileSystem Database is a JSON database such as MongoDB backed by Files store in the FileSystem.<br/>
+JSON FileSystem Database is a JSON database such as MongoDB backed by IO FileSystem operations.<br/>
 Implemented with **Pessimistic Transaction Locking** approach.<br/>
 All methods are asynchronous and access / filtering is executed in parallel using [async](https://github.com/caolan/async).<br/>
 Based on [Jalalhejazi](https://github.com/Jalalhejazi) [jsonfs](https://github.com/Jalalhejazi/jsonfs).
