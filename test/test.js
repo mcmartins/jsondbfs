@@ -1,5 +1,9 @@
 /**
- * (C) Copyright 2014 WebGAP (http://www.webgap.eu/).
+ * (C) Copyright 2015 Manuel Martins.
+ *
+ * This module is inspired by json_file_system.
+ * (json_file_system is Copyright (c) 2014 Jalal Hejazi,
+ *  Licensed under the MIT license.)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +35,48 @@ describe('JSONDBFS Driver', function testSpec() {
     JSONDriver = new JSONDBFS();
     done();
   });
+  
+  it('should fail creating a connection to an invalid path', function test(done) {
+    var Driver = new JSONDBFS({path: '/invalid'});
+    Driver.connect(['Users'], function(err, db){
+      assert.notEqual(err, undefined);
+      assert.equal(db, undefined);
+      done();
+    });
+  });
+    
+  it('should create a new collection using override options', function test(done) {
+    var Driver = new JSONDBFS({path: '/tmp/', inMemory: false});
+    Driver.connect(['Users'], function(err, db){
+      assert.equal(err, undefined);
+      assert.notEqual(db, undefined);
+      done();
+    });
+  });
+  
+  it('should fail creating collections with invalid names', function test(done) {
+    var Driver = new JSONDBFS({path: '/tmp/', inMemory: false});
+    Driver.connect(['Users/|'], function(err, db){
+      assert.notEqual(err, undefined);
+      assert.equal(db, undefined);
+      done();
+    });
+  });
+  
+  it('should fail creating collections with invalid parameter', function test(done) {
+    var Driver = new JSONDBFS({path: '/tmp/', inMemory: false});
+    Driver.connect('Users', function(err, db){
+      assert.notEqual(err, undefined);
+      assert.equal(db, undefined);
+      done();
+    });
+  });
 
-  it('should create a new collection', function test(done) {
+  it('should create a new collection using default options', function test(done) {
     JSONDriver.connect(['Users'], function(err, db){
       assert.equal(err, undefined);
       assert.notEqual(db, undefined);
-      console.log('Database Object: ' + db);
+      // store database object to use later
       database = db;
       done();
     });
@@ -149,6 +189,22 @@ describe('JSONDBFS Driver', function testSpec() {
     database['Users'].remove({name: 'Manuel Martins'}, function(err){
       assert.equal(err, undefined);
       done();
+    });
+  });
+  
+  it('should throw if no criteria is specified', function test(done) {
+    database['Users'].findOne(function(err){
+      assert.notEqual(err, undefined);
+      database['Users'].findAndModify(function(err){
+        assert.notEqual(err, undefined);
+        database['Users'].update(function(err){
+          assert.notEqual(err, undefined);
+          database['Users'].remove(function(err){
+            assert.notEqual(err, undefined);
+            done();
+        });
+        });
+      });
     });
   });
 
