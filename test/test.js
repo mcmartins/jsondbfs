@@ -54,21 +54,16 @@ describe('JSONDBFS Driver', function testSpec() {
     });
   });
   
-  it('should fail creating collections with invalid names', function test(done) {
+  it('should fail creating collections with invalid names / parameters', function test(done) {
     var Driver = new JSONDBFS({path: '/tmp/', inMemory: false});
     Driver.connect(['Users/|'], function(err, db){
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
-      done();
-    });
-  });
-  
-  it('should fail creating collections with invalid parameter', function test(done) {
-    var Driver = new JSONDBFS({path: '/tmp/', inMemory: false});
-    Driver.connect('Users', function(err, db){
-      assert.notEqual(err, undefined);
-      assert.equal(db, undefined);
-      done();
+      Driver.connect('Users', function(err, db){
+        assert.notEqual(err, undefined);
+        assert.equal(db, undefined);
+        done();
+      });
     });
   });
 
@@ -85,19 +80,16 @@ describe('JSONDBFS Driver', function testSpec() {
   it('should insert a new object', function test(done) {
     database['Users'].insert({name: 'Manuel', roles: ['Admin', 'Super']}, function(err){
       assert.equal(err, undefined);
-      done();
-    });
-  });
-
-  it('should count the number of objects', function test(done) {
-    database['Users'].count(function(err, count){
-      assert(count, 1);
-      done();
+      database['Users'].insert({name: 'John', roles: ['User']}, function(err){
+        assert.equal(err, undefined);
+        done();
+      });
     });
   });
 
   it('should update an object', function test(done) {
     database['Users'].update({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function(err, ret){
+      assert.equal(err, undefined);
       assert.equal(ret.nMatched, 1);
       done();
     });
@@ -105,22 +97,8 @@ describe('JSONDBFS Driver', function testSpec() {
 
   it('should count the number of objects', function test(done) {
     database['Users'].count(function(err, count){
+      assert.equal(err, undefined);
       assert(count, 1);
-      done();
-    });
-  });
-
-  it('should insert another object', function test(done) {
-    database['Users'].insert({name: 'John', roles: ['User']}, function(err){
-      assert.equal(err, undefined);
-      done();
-    });
-  });
-
-  it('should count the number of objects', function test(done) {
-    database['Users'].count(function(err, count){
-      assert.equal(err, undefined);
-      assert(count, 2);
       done();
     });
   });
@@ -139,16 +117,12 @@ describe('JSONDBFS Driver', function testSpec() {
       assert.equal(err, undefined);
       assert(documents.length, 1);
       console.log(documents);
-      done();
-    });
-  });
-
-  it('should find a particular user', function test(done) {
-    database['Users'].findOne({name: 'John'},function(err, user){
-      assert.equal(err, undefined);
-      assert.notEqual(user, null);
-      console.log(user);
-      done();
+      database['Users'].findOne({name: 'John'},function(err, user){
+        assert.equal(err, undefined);
+        assert.notEqual(user, null);
+        console.log(user);
+        done();
+      });
     });
   });
 
@@ -181,14 +155,10 @@ describe('JSONDBFS Driver', function testSpec() {
   it('should remove an object', function test(done) {
     database['Users'].remove({name: 'John'}, function(err){
       assert.equal(err, undefined);
-      done();
-    });
-  });
-
-  it('should remove an object', function test(done) {
-    database['Users'].remove({name: 'Manuel Martins'}, function(err){
-      assert.equal(err, undefined);
-      done();
+      database['Users'].remove({name: 'Manuel Martins'}, function(err){
+        assert.equal(err, undefined);
+        done();
+      });
     });
   });
   
@@ -199,10 +169,13 @@ describe('JSONDBFS Driver', function testSpec() {
         assert.notEqual(err, undefined);
         database['Users'].update(function(err){
           assert.notEqual(err, undefined);
-          database['Users'].remove(function(err){
+          database['Users'].update({}, function(err){
             assert.notEqual(err, undefined);
-            done();
-        });
+            database['Users'].remove(function(err){
+              assert.notEqual(err, undefined);
+              done();
+            });
+          });
         });
       });
     });
