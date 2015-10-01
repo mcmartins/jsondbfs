@@ -51,7 +51,7 @@ describe('JSONDBFS Driver', function testSpec() {
     this.timeout(5000);
 
     var data = [];
-    var Driver = new JSONDBFS({path: 'C:\\Users\\Manuel\\Desktop\\folder\\folder'});
+    var Driver = new JSONDBFS();
     Driver.connect(['AnotherCollection'], function (err, db) {
       async.times(100000, function (n, next) {
         data.push({name: generateRandomName(), id: n});
@@ -71,7 +71,7 @@ describe('JSONDBFS Driver', function testSpec() {
   it('should insert 100 concurrent objects', function test(done) {
     this.timeout(5000);
     var concurrent = 100;
-    var Driver = new JSONDBFS({path: 'C:\\Users\\Manuel\\Desktop\\folder\\folder'});
+    var Driver = new JSONDBFS();
     Driver.connect(['Concurrent'], function (err, db) {
       async.times(concurrent, function (n, next) {
         db.Concurrent.insert({name: generateRandomName(), id: n}, function (err, data) {
@@ -281,7 +281,7 @@ describe('JSONDBFS Driver', function testSpec() {
 
   it('should find an element in a big file', function test(done) {
     this.timeout(5000);
-    var Driver = new JSONDBFS({path: 'C:\\Users\\Manuel\\Desktop\\folder\\folder', inMemory: false});
+    var Driver = new JSONDBFS();
     Driver.connect(['big'], function (err, db) {
       db.big.find({"_id": "560d4ce67666691542f88260"}, function (err, data) {
         assert.equal(err, undefined);
