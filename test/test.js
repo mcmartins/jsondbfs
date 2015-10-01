@@ -70,20 +70,20 @@ describe('JSONDBFS Driver', function testSpec() {
 
   it('should insert 100 concurrent objects', function test(done) {
     this.timeout(5000);
-    var concurrent = 100;
+    var concurrentObjs = 100;
     var Driver = new JSONDBFS();
     Driver.connect(['Concurrent'], function (err, db) {
-      async.times(concurrent, function (n, next) {
-        db.Concurrent.insert({name: generateRandomName(), id: n}, function (err, data) {
+      async.times(concurrentObjs, function forEach(n, next) {
+        db.Concurrent.insert({name: generateRandomName(), id: n}, function afterInsert(err, data) {
           assert.notEqual(data, undefined);
           next(err);
         });
-      }, function afterInsert(err, iter) {
+      }, function afterIteration(err, iter) {
         assert.equal(err, undefined);
-        assert.equal(iter, concurrent);
-        db.Concurrent.count(function (err, count) {
+        assert.notEqual(iter, undefined);
+        db.Concurrent.count(function afterCount(err, count) {
           assert.equal(err, undefined);
-          assert.equal(concurrent, count);
+          assert.equal(concurrentObjs, count);
           done();
         });
       });
