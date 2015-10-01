@@ -41,7 +41,7 @@ var path = require('path'),
  */
 function JSONDBFS(options) {
   options = options || {};
-  this._path = options.path || 'C:\\Users\\Manuel\\Desktop\\folder';
+  this._path = options.path || '/tmp/';
   this._inMemory = options.inMemory || false;
   this._ioHandler = new IOHandler(options);
 }
