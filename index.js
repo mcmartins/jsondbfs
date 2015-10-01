@@ -41,7 +41,7 @@ var path = require('path'),
  */
 function JSONDBFS(options) {
   options = options || {};
-  this._path = options.path || '/tmp/';
+  this._path = options.path || 'C:\\Users\\Manuel\\Desktop\\folder';
   this._inMemory = options.inMemory || false;
   this._ioHandler = new IOHandler(options);
 }
@@ -84,7 +84,7 @@ JSONDBFS.prototype.connect = function (collections, callback) {
               return next();
             }
           });
-        }, function finalize(err) {
+        }, function afterCreate(err) {
           if (err) {
             console.log(resources.CONNECTION.INVALID_COLLECTION_NAME);
             return callback(err);
