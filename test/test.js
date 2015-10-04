@@ -227,13 +227,16 @@ describe('JSONDBFS Driver', function testSpec() {
       assert.notEqual(err, undefined);
       database['Users'].findAndModify(function (err) {
         assert.notEqual(err, undefined);
-        database['Users'].update(function (err) {
+        database['Users'].findAndModify({}, function (err) {
           assert.notEqual(err, undefined);
-          database['Users'].update({}, function (err) {
+          database['Users'].update(function (err) {
             assert.notEqual(err, undefined);
-            database['Users'].remove(function (err) {
+            database['Users'].update({}, function (err) {
               assert.notEqual(err, undefined);
-              done();
+              database['Users'].remove(function (err) {
+                assert.notEqual(err, undefined);
+                done();
+              });
             });
           });
         });
@@ -244,17 +247,17 @@ describe('JSONDBFS Driver', function testSpec() {
   it('should throw if no callback is specified', function test(done) {
     try {
       database['Users'].findOne();
-    } catch(err) {
+    } catch (err) {
       assert.notEqual(err, undefined);
     }
     try {
       database['Users'].find();
-    } catch(err) {
+    } catch (err) {
       assert.notEqual(err, undefined);
     }
     try {
       database['Users'].count();
-    } catch(err) {
+    } catch (err) {
       assert.notEqual(err, undefined);
     }
     done();
@@ -263,23 +266,23 @@ describe('JSONDBFS Driver', function testSpec() {
   it('should use the noop callback', function test(done) {
     try {
       database['Users'].insert({name: 'Maria', roles: ['Admin', 'Super']});
-    } catch(err) {
+    } catch (err) {
       assert.equal(err, undefined);
     }
     try {
       database['Users'].update({name: 'Maria'}, {name: 'Maria D.'});
-    } catch(err) {
+    } catch (err) {
       assert.equal(err, undefined);
     }
     try {
       database['Users'].remove({name: 'Maria'});
-    } catch(err) {
+    } catch (err) {
       assert.equal(err, undefined);
     }
     done();
   });
 
-  it('should find an element in a big file', function test(done) {
+  it('should find an element in a big file (47.5MB)', function test(done) {
     this.timeout(5000);
     var Driver = new JSONDBFS();
     Driver.connect(['big'], function (err, db) {
