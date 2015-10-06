@@ -36,3 +36,7 @@ taco.json
 .vs
 bin
 bld
+
+# Others
+.gitignore
+.npmignore

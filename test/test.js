@@ -99,6 +99,29 @@ describe('JSONDBFS Driver', function testSpec() {
     });
   });
 
+  it('should fail creating a connection without passing at least one collection', function test(done) {
+    var Driver = new JSONDBFS();
+    Driver.connect(function (err, db) {
+      assert.notEqual(err, undefined);
+      assert.equal(db, undefined);
+      Driver.connect('', function (err, db) {
+        assert.notEqual(err, undefined);
+        assert.equal(db, undefined);
+        done();
+      });
+    });
+  });
+
+  it('should fail creating a connection without passing a callback', function test(done) {
+    var Driver = new JSONDBFS();
+    try {
+      Driver.connect('Teste');
+    } catch (err) {
+      assert.notEqual(err, undefined);
+    }
+    done();
+  });
+
   it('should create a new collection using override options', function test(done) {
     var Driver = new JSONDBFS({path: '/tmp/', inMemory: false});
     Driver.connect(['Users'], function (err, db) {
@@ -108,16 +131,21 @@ describe('JSONDBFS Driver', function testSpec() {
     });
   });
 
-  it('should fail creating collections with invalid names / parameters', function test(done) {
-    var Driver = new JSONDBFS({path: '/tmp/', inMemory: false});
+  it('should create a new collection passing a non array as collection', function test(done) {
+    var Driver = new JSONDBFS();
+    Driver.connect('UsersString', function (err, db) {
+      assert.equal(err, undefined);
+      assert.notEqual(db, undefined);
+      done();
+    });
+  });
+
+  it('should fail creating collections with invalid names', function test(done) {
+    var Driver = new JSONDBFS();
     Driver.connect(['Users/|'], function (err, db) {
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
-      Driver.connect('Users', function (err, db) {
-        assert.notEqual(err, undefined);
-        assert.equal(db, undefined);
         done();
-      });
     });
   });
 

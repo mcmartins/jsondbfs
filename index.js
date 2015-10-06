@@ -35,13 +35,13 @@ var path = require('path'),
  * JSON DB FS Main entry point
  *
  * @param {Object} options
- *        {String} options.path
- *        {String} options.inMemory
+ *        {String} options.path defaults to '/tmp/'
+ *        {String} options.inMemory defaults to 'false'
  * @constructor
  */
 function JSONDBFS(options) {
   options = options || {};
-  this._path = options.path || '/tmp/';
+  this._path = options.path || 'C:\\Users\\Manuel\\Desktop\\folder\\folder';
   this._inMemory = options.inMemory || false;
   this._ioHandler = new IOHandler(options);
 }
@@ -49,17 +49,30 @@ function JSONDBFS(options) {
 /**
  * Initializes a connection to the specified collections.
  *
- * @param collections
- * @param callback
+ * @param collections an array of collections names
+ *                    the collection names will be created as files in the specified 'path'
+ * @param callback executes the callback with the default assignature (err, database)
  */
 JSONDBFS.prototype.connect = function (collections, callback) {
+  if (!collections || typeof collections === 'function') {
+    if (typeof collections === 'function') {
+      // should be the callback
+      callback = collections;
+    }
+    // at least one collection should be a provided, we cannot proceed
+    return callback(new Error('No collections provided!'));
+  }
+  if (!callback || typeof callback !== 'function') {
+    // callback should be a function, we cannot proceed
+    throw new Error('No callback provided!');
+  }
   var self = this;
   self._db = {};
   async.waterfall([
     function validatePath(next) {
       self._ioHandler.pathExists(self._path, function afterCheck(exists) {
         if (!exists) {
-          console.log(resources.CONNECTION.INVALID_PATH + self._path);
+          console.error(resources.CONNECTION.INVALID_PATH + self._path);
           return callback(new Error(resources.CONNECTION.INVALID_PATH + self._path));
         }
         self._db._path = self._path;
@@ -69,34 +82,33 @@ JSONDBFS.prototype.connect = function (collections, callback) {
       });
     },
     function createCollections() {
-      if (_.isArray(collections)) {
-        async.each(collections, function create(collection, next) {
-          var fullPath = path.join(self._path, collection + '.json');
-          console.log(resources.CONNECTION.COLLECTION_CREATED + collection);
-          self[collection] = new Collection({db: self, path: fullPath});
-          self._ioHandler.pathExists(fullPath, function afterCheck(exists) {
-            if (!exists) {
-              self._ioHandler.writeFile(fullPath, function afterWriteFile(err) {
-                return next(err);
-              });
-            } else {
-              // the file exists we're good to go
-              return next();
-            }
-          });
-        }, function afterCreate(err) {
-          if (err) {
-            console.log(resources.CONNECTION.INVALID_COLLECTION_NAME);
-            return callback(err);
+      if (!_.isArray(collections)) {
+        collections = [collections];
+      }
+      // in parallel initialize each collection
+      async.each(collections, function create(collection, next) {
+        var fullPath = path.join(self._path, collection + '.json');
+        console.log(resources.CONNECTION.COLLECTION_CREATE + collection);
+        self[collection] = new Collection({db: self, path: fullPath});
+        self._ioHandler.pathExists(fullPath, function afterCheck(exists) {
+          if (!exists) {
+            self._ioHandler.writeFile(fullPath, function afterWriteFile(err) {
+              return next(err);
+            });
           } else {
-            console.log(resources.CONNECTION.SUCCESS + self._path);
-            return callback(null, self);
+            // the file exists we're good to go (I hope)
+            return next();
           }
         });
-      } else {
-        console.log(resources.CONNECTION.INVALID_COLLECTION_NAME);
-        return callback(new Error(resources.CONNECTION.INVALID_COLLECTION_NAME));
-      }
+      }, function afterCreate(err) {
+        if (err) {
+          console.error(resources.CONNECTION.INVALID_COLLECTION_NAME);
+          return callback(err);
+        } else {
+          console.log(resources.CONNECTION.SUCCESS + self._path);
+          return callback(null, self);
+        }
+      });
     }
   ]);
 };

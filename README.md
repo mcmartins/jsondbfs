@@ -31,47 +31,88 @@ var database,
   JSONDriver = new JSONDBFS({path: '/path/to/store/collections'});
   
   // receives an array containing the collections you want to create / use ['Users', 'Others']
+  // existing collections will be attached
   JSONDriver.connect(['Users'], function(err, db){
     database = db;
   });
 
-  // the collection can be accessed by doing: 'database['Users'].insert' or 'database.Users.insert'
-  database['Users'].insert({name: 'Manuel', roles: ['Admin', 'Super']}, function(err){
-    ...
+  // now the collection can be accessed by doing: 'database['Users'].insert' or 'database.Users.insert'
+  // as it is a property of the collection object
+
+  database.Users.insert({name: 'Manuel', roles: ['Admin', 'Super']}, function(err){
+    // inserts the document
   });
 
-  database['Users'].count(function(err, count){
-    // returns the lenth of the collection
-    // with criteria returns the number of documents matching that criteria
-    ...
+  database.Users.count(function(err, count){
+    // returns the length of the collection
   });
 
-  database['Users'].update({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function(err, result){
+  database.Users.count({name: 'Manuel'}, function(err, count){
+    // returns the number of documents matching that criteria
+  });
+
+  database.Users.update({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function(err, result){
+    // updates a specified document based on a criteria
     // result is { nMatched: 1, nModified: 1, nUpserted: 0 }
   });
 
-  database['Users'].find(function(err, documents){
-    // returns everything since there is no criteria specified
-    ...
+  //
+  database.Users.findAndModify({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function(err, result){
+    // updates a specified document based on a criteria
+    // result is the updated document
   });
 
-  database['Users'].find({name: 'John'},function(err, documents){
+  database.Users.find(function(err, documents){
+    // returns everything since there is no criteria specified
+  });
+
+  database.Users.find({name: 'John'},function(err, documents){
     // returns an array with the elements that match the criteria
     ...
   });
 
-  database['Users'].findOne({name: 'John'},function(err, document){
+  databaseUsers.findOne({name: 'John'},function(err, document){
     // returns the first document that matches the criteria
     ...
+  });
+  
+  database.Users.remove({name: 'Manuel'}, function(err, success){
+    // returns true if records were removed
   });
 ```
 
 # Options
 
 ```javascript
+// Driver options
 var Driver = new JSONDBFS({path: '/path/to/store/collections', inMemory: true});
 ...
+// Collection options
 database.Collection.update(criteria, updateCriteria, {upsert: false, multi: true}, callback);
+database.Collection.findAndModify(criteria, updateCriteria, {upsert: false, multi: true}, callback);
+database.Collection.find(criteria, {multi: false}, callback);
+database.Collection.remove(criteria, {multi: false}, callback);
+```
+
+## Driver options
+
+When initializing the Driver you can pass 2 options:<br/>
+```bash
+options.path - The path to store the collection files. Accepts a String. Defaults to '/tmp/'.
+options.inMemory - Should maintain a copy of the collection inMemory. Accepts a boolean 'true' or 'false'. Defaults to 'false'. **Not Implemented**.
+```
+
+## Collections options
+
+When updating a record you can pass 2 options:<br/>
+```bash
+options.upsert - If record is not found and this options is set to true, a new record will be created. Accepts a boolean 'true' or 'false'. Defaults to 'false'.<br/>
+options.multi - Should update multiple records if they match. Accepts a boolean 'true' or 'false'. Defaults to 'true'.
+```
+
+When removing or finding you can pass 1 option:<br/>
+```bash
+options.multi - Should update multiple records if they match. Accepts a boolean 'true' or 'false'. Defaults to 'true'.
 ```
 
 Please check the implementation ands tests for more details.
