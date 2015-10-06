@@ -29,6 +29,9 @@ node_modules
 # Intellij
 .idea
 
+# Tests
+test
+
 # VisualStudio
 taco.json
 *.sln
