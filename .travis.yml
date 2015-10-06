@@ -1,4 +1,4 @@
 language: node_js
 node_js:
   - "0.12"
-after_script: istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && ./node_modules/codeclimate-test-reporter/bin/codeclimate.js < ./coverage/lcov.info && rm -rf ./coverage
+after_script: rm /tmp/*.json; istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && ./node_modules/codeclimate-test-reporter/bin/codeclimate.js < ./coverage/lcov.info && rm -rf ./coverage
