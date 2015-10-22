@@ -59,9 +59,10 @@ Criteria queries on JSON objects Mongo style [json-criteria](https://github.com/
   });
 
   //
-  database.Users.findAndModify({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function(err, result){
+  database.Users.findAndModify({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, {retObj: true}, function(err, result){
     // updates a specified document based on a criteria
     // result is the updated document
+    // withou retObj info on updated / insert { nMatched: 1, nModified: 1, nUpserted: 0 } is returned
     ...
   });
 
@@ -113,6 +114,7 @@ When updating a record you can pass 2 options:<br/>
 ```bash
 options.upsert - If record is not found and this options is set to true, a new record will be created. Accepts a boolean 'true' or 'false'. Defaults to 'false'.<br/>
 options.multi - Should update multiple records if they match. Accepts a boolean 'true' or 'false'. Defaults to 'true'.
+options.retObj - Set to true if you want to return the updated object, otherwise a stats object is returned with info on updated records (as with MongoDB)
 ```
 
 When removing or finding you can pass 1 option:<br/>

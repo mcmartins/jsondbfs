@@ -42,6 +42,10 @@ var path = require('path'),
  * @param callback executes the callback with the default signature (err, database)
  */
 module.exports.connect = function (collections, options, callback) {
+  if (typeof collections === 'function') {
+    callback = collections;
+    collections = undefined;
+  }
   if (typeof options === 'function') {
     // should be the callback
     callback = options;

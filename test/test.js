@@ -132,7 +132,7 @@ describe('JSONDBFS Driver', function testSpec() {
     JSONDBFSDriver.connect(['InvalidCollectionName/|'], function afterConnect(err, db) {
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
-        done();
+      done();
     });
   });
 
@@ -165,7 +165,10 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should update an object', function test(done) {
-    database['Users'].update({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function afterUpdate(err, ret) {
+    database['Users'].update({name: 'Manuel'}, {
+      name: 'Manuel Martins',
+      token: 'xsf32S123ss'
+    }, function afterUpdate(err, ret) {
       assert.equal(err, undefined);
       assert.equal(ret.nMatched, 1);
       done();
