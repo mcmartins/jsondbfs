@@ -26,44 +26,48 @@ Criteria queries on JSON objects Mongo style [json-criteria](https://github.com/
 # API
 
 ```javascript
-var database,
-  JSONDBFS = require('../index'),
-  JSONDriver = new JSONDBFS({path: '/path/to/store/collections'});
-  
+  var JSONDBFSDriver = require('jsondbfs')
+  var database;
+
   // receives an array containing the collections you want to create / use ['Users', 'Others']
   // existing collections will be attached
-  JSONDriver.connect(['Users'], function(err, db){
+  JSONDBFSDriver.connect(['Users'], {path: '/path/to/store/collections'}, function(err, db){
     database = db;
   });
 
-  // now the collection can be accessed by doing: 'database['Users'].insert' or 'database.Users.insert'
-  // as it is a property of the collection object
+  // now the collection can be accessed in the database object: 'database['Users'].insert' or 'database.Users.insert'
 
-  database.Users.insert({name: 'Manuel', roles: ['Admin', 'Super']}, function(err){
-    // inserts the document
+  database.Users.insert({name: 'Manuel', roles: ['Admin', 'Super']}, function(err, document){
+    // inserts the document and returns it representation in the database (including the internal id)
+    ...
   });
 
   database.Users.count(function(err, count){
     // returns the length of the collection
+    ...
   });
 
   database.Users.count({name: 'Manuel'}, function(err, count){
     // returns the number of documents matching that criteria
+    ...
   });
 
   database.Users.update({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function(err, result){
     // updates a specified document based on a criteria
     // result is { nMatched: 1, nModified: 1, nUpserted: 0 }
+    ...
   });
 
   //
   database.Users.findAndModify({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function(err, result){
     // updates a specified document based on a criteria
     // result is the updated document
+    ...
   });
 
   database.Users.find(function(err, documents){
     // returns everything since there is no criteria specified
+    ...
   });
 
   database.Users.find({name: 'John'},function(err, documents){
@@ -78,6 +82,7 @@ var database,
   
   database.Users.remove({name: 'Manuel'}, function(err, success){
     // returns true if records were removed
+    ...
   });
 ```
 
@@ -113,6 +118,19 @@ options.multi - Should update multiple records if they match. Accepts a boolean 
 When removing or finding you can pass 1 option:<br/>
 ```bash
 options.multi - Should update multiple records if they match. Accepts a boolean 'true' or 'false'. Defaults to 'true'.
+```
+
+## Database Collection File Lock options
+
+Using a **Pessimistic Transaction Locking** approach, the collection files are protected using a transaction locking module.
+The options to tune the lock are as follows:
+
+```bash
+options.lockWait
+options.lockPollPeriod
+options.lockStale
+options.lockRetries
+options.lockRetryWait
 ```
 
 Please check the implementation ands tests for more details.

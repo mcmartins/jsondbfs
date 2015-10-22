@@ -22,20 +22,15 @@
  *
  */
 
-var JSONDBFS = require('../index'),
+var JSONDBFSDriver = require('../index'),
   assert = require('assert'),
   async = require('async'),
-  JSONDriver, database;
+  database;
 
 /**
  * JSON DB FS Test Specification
  */
 describe('JSONDBFS Driver', function testSpec() {
-
-  before(function (done) {
-    JSONDriver = new JSONDBFS();
-    done();
-  });
 
   function generateRandomName() {
     var text = "";
@@ -51,8 +46,7 @@ describe('JSONDBFS Driver', function testSpec() {
     this.timeout(5000);
 
     var data = [];
-    var Driver = new JSONDBFS();
-    Driver.connect(['AnotherCollection'], function (err, db) {
+    JSONDBFSDriver.connect(['AnotherCollection'], function (err, db) {
       async.times(100000, function (n, next) {
         data.push({name: generateRandomName(), id: n});
         next();
@@ -71,8 +65,7 @@ describe('JSONDBFS Driver', function testSpec() {
   it('should insert 100 concurrent objects', function test(done) {
     this.timeout(5000);
     var concurrentObjs = 100;
-    var Driver = new JSONDBFS();
-    Driver.connect(['Concurrent'], function (err, db) {
+    JSONDBFSDriver.connect(['Concurrent'], function afterConnect(err, db) {
       async.times(concurrentObjs, function forEach(n, next) {
         db.Concurrent.insert({name: generateRandomName(), id: n}, function afterInsert(err, data) {
           assert.notEqual(data, undefined);
@@ -91,8 +84,7 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should fail creating a connection to an invalid path', function test(done) {
-    var Driver = new JSONDBFS({path: '/invalid'});
-    Driver.connect(['Users'], function (err, db) {
+    JSONDBFSDriver.connect(['Collection'], {path: '/invalid'}, function afterConnect(err, db) {
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
       done();
@@ -100,40 +92,36 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should fail creating a connection without passing at least one collection', function test(done) {
-    var Driver = new JSONDBFS();
-    Driver.connect(function (err, db) {
+    JSONDBFSDriver.connect(function afterConnect(err, db) {
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
-      Driver.connect('', function (err, db) {
+      JSONDBFSDriver.connect('', function (err, db) {
         assert.notEqual(err, undefined);
         assert.equal(db, undefined);
-        done();
+        JSONDBFSDriver.connect(null, function (err, db) {
+          assert.notEqual(err, undefined);
+          assert.equal(db, undefined);
+          JSONDBFSDriver.connect(undefined, function (err, db) {
+            assert.notEqual(err, undefined);
+            assert.equal(db, undefined);
+            done();
+          });
+        });
       });
     });
   });
 
   it('should fail creating a connection without passing a callback', function test(done) {
-    var Driver = new JSONDBFS();
     try {
-      Driver.connect('Teste');
+      JSONDBFSDriver.connect('MissingCallback');
     } catch (err) {
       assert.notEqual(err, undefined);
     }
     done();
   });
 
-  it('should create a new collection using override options', function test(done) {
-    var Driver = new JSONDBFS({path: '/tmp/', inMemory: false});
-    Driver.connect(['Users'], function (err, db) {
-      assert.equal(err, undefined);
-      assert.notEqual(db, undefined);
-      done();
-    });
-  });
-
   it('should create a new collection passing a non array as collection', function test(done) {
-    var Driver = new JSONDBFS();
-    Driver.connect('UsersString', function (err, db) {
+    JSONDBFSDriver.connect('CollectionAsString', function afterConnect(err, db) {
       assert.equal(err, undefined);
       assert.notEqual(db, undefined);
       done();
@@ -141,16 +129,23 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should fail creating collections with invalid names', function test(done) {
-    var Driver = new JSONDBFS();
-    Driver.connect(['Users/|'], function (err, db) {
+    JSONDBFSDriver.connect(['InvalidCollectionName/|'], function afterConnect(err, db) {
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
         done();
     });
   });
 
+  it('should create a new collection using override options', function test(done) {
+    JSONDBFSDriver.connect(['Override'], {path: '/tmp/', inMemory: false}, function afterConnect(err, db) {
+      assert.equal(err, undefined);
+      assert.notEqual(db, undefined);
+      done();
+    });
+  });
+
   it('should create a new collection using default options', function test(done) {
-    JSONDriver.connect(['Users'], function (err, db) {
+    JSONDBFSDriver.connect(['Users'], function afterConnect(err, db) {
       assert.equal(err, undefined);
       assert.notEqual(db, undefined);
       // store database object to use later
@@ -160,9 +155,9 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should insert a new object', function test(done) {
-    database['Users'].insert({name: 'Manuel', roles: ['Admin', 'Super']}, function (err) {
+    database['Users'].insert({name: 'Manuel', roles: ['Admin', 'Super']}, function afterInsert(err) {
       assert.equal(err, undefined);
-      database['Users'].insert({name: 'John', roles: ['User']}, function (err) {
+      database['Users'].insert({name: 'John', roles: ['User']}, function afterInsert(err) {
         assert.equal(err, undefined);
         done();
       });
@@ -170,7 +165,7 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should update an object', function test(done) {
-    database['Users'].update({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function (err, ret) {
+    database['Users'].update({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, function afterUpdate(err, ret) {
       assert.equal(err, undefined);
       assert.equal(ret.nMatched, 1);
       done();
@@ -178,7 +173,7 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should count the number of objects', function test(done) {
-    database['Users'].count(function (err, count) {
+    database['Users'].count(function afterCount(err, count) {
       assert.equal(err, undefined);
       assert(count, 1);
       done();
@@ -186,7 +181,7 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should find all users', function test(done) {
-    database['Users'].find(function (err, documents) {
+    database['Users'].find(function afterFind(err, documents) {
       assert.equal(err, undefined);
       assert(documents.length, 2);
       console.log(documents);
@@ -195,11 +190,11 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should find a particular user', function test(done) {
-    database['Users'].find({name: 'John'}, function (err, documents) {
+    database['Users'].find({name: 'John'}, function afterFind(err, documents) {
       assert.equal(err, undefined);
       assert(documents.length, 1);
       console.log(documents);
-      database['Users'].findOne({name: 'John'}, function (err, user) {
+      database['Users'].findOne({name: 'John'}, function afterFind(err, user) {
         assert.equal(err, undefined);
         assert.notEqual(user, null);
         console.log(user);
@@ -212,7 +207,7 @@ describe('JSONDBFS Driver', function testSpec() {
     database['Users'].findAndModify({name: 'Manuel Martins'}, {
       name: 'Manuel Martins',
       token: null
-    }, function (err, ret) {
+    }, function afterFindAndModify(err, ret) {
       assert.equal(err, undefined);
       assert.notEqual(ret, null);
       console.log(ret);
@@ -224,7 +219,7 @@ describe('JSONDBFS Driver', function testSpec() {
     database['Users'].update({name: 'Manuel'}, {
       name: 'Manuel Martins',
       token: null
-    }, {upsert: true}, function (err, ret) {
+    }, {upsert: true}, function afterUpdate(err, ret) {
       assert.equal(err, undefined);
       assert.notEqual(ret, null);
       console.log(ret);
@@ -233,7 +228,7 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should count the number of objects', function test(done) {
-    database['Users'].count({name: 'John'}, function (err, count) {
+    database['Users'].count({name: 'John'}, function afterCount(err, count) {
       assert.equal(err, undefined);
       assert(count, 1);
       done();
@@ -241,9 +236,9 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should remove an object', function test(done) {
-    database['Users'].remove({name: 'John'}, function (err) {
+    database['Users'].remove({name: 'John'}, function afterRemove(err) {
       assert.equal(err, undefined);
-      database['Users'].remove({name: 'Manuel Martins'}, function (err) {
+      database['Users'].remove({name: 'Manuel Martins'}, function afterRemove(err) {
         assert.equal(err, undefined);
         done();
       });
@@ -251,17 +246,17 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should throw if no criteria is specified', function test(done) {
-    database['Users'].findOne(function (err) {
+    database['Users'].findOne(function afterFind(err) {
       assert.notEqual(err, undefined);
-      database['Users'].findAndModify(function (err) {
+      database['Users'].findAndModify(function afterFindAndModify(err) {
         assert.notEqual(err, undefined);
-        database['Users'].findAndModify({}, function (err) {
+        database['Users'].findAndModify({}, function afterFindAndModify(err) {
           assert.notEqual(err, undefined);
-          database['Users'].update(function (err) {
+          database['Users'].update(function afterUpdate(err) {
             assert.notEqual(err, undefined);
-            database['Users'].update({}, function (err) {
+            database['Users'].update({}, function afterUpdate(err) {
               assert.notEqual(err, undefined);
-              database['Users'].remove(function (err) {
+              database['Users'].remove(function afterRemove(err) {
                 assert.notEqual(err, undefined);
                 done();
               });
@@ -272,26 +267,7 @@ describe('JSONDBFS Driver', function testSpec() {
     });
   });
 
-  it('should throw if no callback is specified', function test(done) {
-    try {
-      database['Users'].findOne();
-    } catch (err) {
-      assert.notEqual(err, undefined);
-    }
-    try {
-      database['Users'].find();
-    } catch (err) {
-      assert.notEqual(err, undefined);
-    }
-    try {
-      database['Users'].count();
-    } catch (err) {
-      assert.notEqual(err, undefined);
-    }
-    done();
-  });
-
-  it('should use the noop callback', function test(done) {
+  it('should use the no op callback', function test(done) {
     try {
       database['Users'].insert({name: 'Maria', roles: ['Admin', 'Super']});
     } catch (err) {
@@ -311,10 +287,9 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should find an element in a big file (47.5MB)', function test(done) {
-    this.timeout(5000);
-    var Driver = new JSONDBFS();
-    Driver.connect(['big'], function (err, db) {
-      db.big.find({"_id": "560d4ce67666691542f88260"}, function (err, data) {
+    this.timeout(6000);
+    JSONDBFSDriver.connect(['big'], function afterConnect(err, db) {
+      db.big.find({"_id": "560d4ce67666691542f88260"}, function afterFind(err, data) {
         assert.equal(err, undefined);
         assert.notEqual(data, undefined);
         done();

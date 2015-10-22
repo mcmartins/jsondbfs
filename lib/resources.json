@@ -1,8 +1,0 @@
-{
-  "CONNECTION": {
-    "SUCCESS": "JSON collections database path is: ",
-    "INVALID_PATH": "Cannot access the following path: ",
-    "INVALID_COLLECTION_NAME": "Collection names must not contain any extension or any character not allowed in a filename.",
-    "COLLECTION_CREATE": "The following Collection is about to be attached: "
-  }
-}
