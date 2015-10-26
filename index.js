@@ -69,7 +69,7 @@ module.exports.connect = function (collections, options, callback) {
   self._ioHandler = new IOHandler(options);
   self._db = {};
   async.waterfall([
-    function validatePath(next) {
+    function validateDatabasePath(next) {
       self._ioHandler.pathExists(self._path, function afterCheck(exists) {
         if (!exists) {
           console.error('Cannot access the following path: ' + self._path);
@@ -81,12 +81,12 @@ module.exports.connect = function (collections, options, callback) {
         return next();
       });
     },
-    function createCollections() {
+    function attachOrCreateCollections() {
       if (!_.isArray(collections)) {
         collections = [collections];
       }
       // in parallel initialize each collection
-      async.each(collections, function create(collection, next) {
+      async.each(collections, function attachOrCreate(collection, next) {
         var fullPath = path.join(self._path, collection + '.json');
         console.log('The following Collection is about to be attached: ' + collection);
         self[collection] = new Collection({db: self, path: fullPath});
@@ -100,7 +100,7 @@ module.exports.connect = function (collections, options, callback) {
             return next();
           }
         });
-      }, function afterCreate(err) {
+      }, function afterAttachOrCreate(err) {
         if (err) {
           console.error('Collection names must not contain any extension or any character not allowed in a filename.');
           return callback(err);
