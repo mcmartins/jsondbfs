@@ -87,6 +87,33 @@ Criteria queries on JSON objects Mongo style [json-criteria](https://github.com/
   });
 ```
 
+Support for [Query and Projection Operators](https://docs.mongodb.org/manual/reference/operator/query/):
+
+```javascript
+    database.Users.findOne({
+      identities: {
+        $elemMatch: {
+          id: identity.id,
+          provider: identity.provider
+        }
+      }
+    }, function (err, document) {
+      // returns the first document that matches the criteria inside an array of identities
+      ...
+    });
+
+    database.Collection.find({
+      quantity: { $gt: 25 }
+    }, function (err, documents) {
+      // returns the documents that matches the criteria
+      ...
+    });
+    
+    ...
+```
+
+Support provided by [json-criteria](https://github.com/mirek/node-json-criteria).
+
 # Options
 
 ```javascript
