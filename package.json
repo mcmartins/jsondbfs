@@ -34,7 +34,7 @@
     "node-uuid": ">=1.4.3",
     "underscore": ">=1.8.3",
     "async": ">=1.5.0",
-    "babel": ">=6.0.12",
+    "babel-polyfill": ">=6.0.2",
     "lockfile": ">=1.0.1",
     "json-criteria": ">=2.6.0"
   },
