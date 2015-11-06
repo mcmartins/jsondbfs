@@ -24,11 +24,11 @@
 
 'use strict';
 
-var path = require('path'),
-  _ = require('underscore'),
-  async = require('async'),
-  Collection = require('./lib/collection'),
-  IOHandler = require('./lib/ioHandler');
+var path = require('path');
+var _ = require('underscore');
+var async = require('async');
+var Collection = require('./lib/collection');
+var IOHandler = require('./lib/ioHandler');
 
 /**
  * JSON DB FS Main entry point
@@ -96,7 +96,7 @@ module.exports.connect = function (collections, options, callback) {
               return next(err);
             });
           } else {
-            // the file exists we're good to go (I hope ...)
+            // the file exists we're good to go
             return next();
           }
         });

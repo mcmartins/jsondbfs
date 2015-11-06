@@ -163,6 +163,13 @@ describe('JSONDBFS Driver', function testSpec() {
       });
     });
   });
+  
+  it('should fail insert if no object is passed', function test(done) {
+    database['Users'].insert(function afterInsert(err) {
+      assert.notEqual(err, undefined);
+      done();
+    });
+  });
 
   it('should update an object', function test(done) {
     database['Users'].update({name: 'Manuel'}, {
