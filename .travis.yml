@@ -1,4 +1,14 @@
 language: node_js
 node_js:
-  - "0.12"
-after_script: rm /tmp/*.json; istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && ./node_modules/codeclimate-test-reporter/bin/codeclimate.js < ./coverage/lcov.info && rm -rf ./coverage
+- '0.12'
+after_script: rm /tmp/*.json; istanbul cover ./node_modules/mocha/bin/_mocha --report
+  lcovonly -- -R spec && ./node_modules/codeclimate-test-reporter/bin/codeclimate.js
+  < ./coverage/lcov.info && rm -rf ./coverage
+deploy:
+  provider: npm
+  email: manuelmachadomartins@gmail.com
+  api_key:
+    secure: GgMO2SsHqGpfP9g7I/JniP1tdZ4Z8E6Om9PWwWOmh0ZqYGmpMqqb1JaoLDv/WxEQ9nIX3umhGmBS1eihgkhbwcldap5oWQO/g5PiHzD+VcN82EGBR+vkejohZWmEciOxzQMxR9Q4GgFOnP/+fzDL3uuLbmKBluh+rfWDEY7iuxfn5oxWd5U5So8ef/l4dowX2FiFaKK0SfvZIsyKdgmZHxzVOZ0/DEmh2sc57J4FJvS1iUp4DB44V41IXj/3Mg533ICrt+Z/Knh8mH99mOISCZmC95YxKXWVBf9nLQhex/6bsEXihibxUZAZb/BY52QkoA1uvTkv+svMecTvCK+MT6rupBIZ2iz5XJLI2PrNt9kE8TYLJyHIEu8VU9E2ORM8Dx0ZcpUIhnlkJoA/lEHyX1RmZ/qk4juhImANFVQOjbIPPqhChvjP6VPBOUi3/4popfLJg5Q4lqhwJpF/FfsDu+BC57pvyRPtwvqe73qnF24PJhbOZFkPqWXFQoaZ6u5S9hDAe3iMIhmgoLhxlFhL1NQOrVg6xPgBD3fusfvd7lVunrx+nngqfn9A6jdl8aTXHVYVSfg9eSnTz3F/jIYx4BNRcg2M1CUZ3UZCkTn0faJX10oHotby34m6YVldHiJV45hlSaUl8ycyM4cEX6HL4dZjoLWy2JiTJsGdsSWk9/8=
+  on:
+    tags: true
+    repo: webgap/database-dao

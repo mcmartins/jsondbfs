@@ -58,7 +58,6 @@ Criteria queries on JSON objects Mongo style [json-criteria](https://github.com/
     ...
   });
 
-  //
   database.Users.findAndModify({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, {retObj: true}, function(err, result){
     // updates a specified document based on a criteria
     // result is the updated document
@@ -76,7 +75,7 @@ Criteria queries on JSON objects Mongo style [json-criteria](https://github.com/
     ...
   });
 
-  databaseUsers.findOne({name: 'John'},function(err, document){
+  database.Users.findOne({name: 'John'},function(err, document){
     // returns the first document that matches the criteria
     ...
   });
