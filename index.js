@@ -37,8 +37,8 @@ var IOHandler = require('./lib/ioHandler');
  * @param collections an array of collections names
  *                    the collection names will be created as files in the specified 'path'
  * @param {Object} options
- *        {String} options.path defaults to '/tmp/'
- *        {String} options.inMemory defaults to 'false'
+ * @param {String} options.path defaults to '/tmp/'
+ * @param {String} options.inMemory defaults to 'false'
  * @param callback executes the callback with the default signature (err, database)
  */
 module.exports.connect = function (collections, options, callback) {
