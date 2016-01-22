@@ -22,15 +22,17 @@
  *
  */
 
-var JSONDBFSDriver = require('../index'),
-  assert = require('assert'),
-  async = require('async'),
-  database;
+var JSONDBFSDriver = require('../index');
+var assert = require('assert');
+var async = require('async');
+var database;
 
 /**
  * JSON DB FS Test Specification
  */
 describe('JSONDBFS Driver', function testSpec() {
+
+  var data = [];
 
   function generateRandomName() {
     var text = "";
@@ -41,30 +43,31 @@ describe('JSONDBFS Driver', function testSpec() {
     }
     return text;
   }
-
-  it('should insert 100000 entries', function test(done) {
-    this.timeout(5000);
-
-    var data = [];
-    JSONDBFSDriver.connect(['AnotherCollection'], function (err, db) {
-      async.times(100000, function (n, next) {
+  
+  before(function(done){
+    this.timeout(10000);
+    async.times(250000, function forEach(n, next) {
         data.push({name: generateRandomName(), id: n});
         next();
-      }, function (err, cenas) {
-        assert.equal(err, undefined);
-        assert.notEqual(cenas, undefined);
-        db.AnotherCollection.insert(data, function (err, data) {
-          assert.equal(err, undefined);
-          assert.notEqual(data, undefined);
-          done();
-        });
-      });
+    }, function after(err, iter) {
+      return done(err);
     });
   });
 
-  it('should insert 100 concurrent objects', function test(done) {
-    this.timeout(5000);
-    var concurrentObjs = 100;
+  it('should insert 250K objects', function test(done) {
+    JSONDBFSDriver.connect(['AnotherCollection'], function afterConnect(err, db) {
+        db.AnotherCollection.insert(data, function afterInsert(err, res) {
+          assert.equal(err, undefined);
+          assert.notEqual(res, undefined);
+          //assert(data.length, res.length);
+          return done();
+        });
+    });
+  });
+
+  it('should insert 300 concurrent objects', function test(done) {
+    this.timeout(10000);
+    var concurrentObjs = 300;
     JSONDBFSDriver.connect(['Concurrent'], function afterConnect(err, db) {
       async.times(concurrentObjs, function forEach(n, next) {
         db.Concurrent.insert({name: generateRandomName(), id: n}, function afterInsert(err, data) {
@@ -77,7 +80,7 @@ describe('JSONDBFS Driver', function testSpec() {
         db.Concurrent.count(function afterCount(err, count) {
           assert.equal(err, undefined);
           assert.equal(concurrentObjs, count);
-          done();
+          return done();
         });
       });
     });
@@ -87,7 +90,7 @@ describe('JSONDBFS Driver', function testSpec() {
     JSONDBFSDriver.connect(['Collection'], {path: '/invalid'}, function afterConnect(err, db) {
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
-      done();
+      return done();
     });
   });
 
@@ -104,7 +107,7 @@ describe('JSONDBFS Driver', function testSpec() {
           JSONDBFSDriver.connect(undefined, function (err, db) {
             assert.notEqual(err, undefined);
             assert.equal(db, undefined);
-            done();
+            return done();
           });
         });
       });
@@ -117,14 +120,14 @@ describe('JSONDBFS Driver', function testSpec() {
     } catch (err) {
       assert.notEqual(err, undefined);
     }
-    done();
+    return done();
   });
 
   it('should create a new collection passing a non array as collection', function test(done) {
     JSONDBFSDriver.connect('CollectionAsString', function afterConnect(err, db) {
       assert.equal(err, undefined);
       assert.notEqual(db, undefined);
-      done();
+      return done();
     });
   });
 
@@ -132,7 +135,7 @@ describe('JSONDBFS Driver', function testSpec() {
     JSONDBFSDriver.connect(['InvalidCollectionName/|'], function afterConnect(err, db) {
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
-      done();
+      return done();
     });
   });
 
@@ -140,7 +143,7 @@ describe('JSONDBFS Driver', function testSpec() {
     JSONDBFSDriver.connect(['Override'], {path: '/tmp/', inMemory: false}, function afterConnect(err, db) {
       assert.equal(err, undefined);
       assert.notEqual(db, undefined);
-      done();
+      return done();
     });
   });
 
@@ -150,7 +153,7 @@ describe('JSONDBFS Driver', function testSpec() {
       assert.notEqual(db, undefined);
       // store database object to use later
       database = db;
-      done();
+      return done();
     });
   });
 
@@ -159,7 +162,7 @@ describe('JSONDBFS Driver', function testSpec() {
       assert.equal(err, undefined);
       database['Users'].insert({name: 'John', roles: ['User']}, function afterInsert(err) {
         assert.equal(err, undefined);
-        done();
+        return done();
       });
     });
   });
@@ -167,7 +170,7 @@ describe('JSONDBFS Driver', function testSpec() {
   it('should fail insert if no object is passed', function test(done) {
     database['Users'].insert(function afterInsert(err) {
       assert.notEqual(err, undefined);
-      done();
+      return done();
     });
   });
 
@@ -178,7 +181,7 @@ describe('JSONDBFS Driver', function testSpec() {
     }, function afterUpdate(err, ret) {
       assert.equal(err, undefined);
       assert.equal(ret.nMatched, 1);
-      done();
+      return done();
     });
   });
 
@@ -186,7 +189,7 @@ describe('JSONDBFS Driver', function testSpec() {
     database['Users'].count(function afterCount(err, count) {
       assert.equal(err, undefined);
       assert(count, 1);
-      done();
+      return done();
     });
   });
 
@@ -194,8 +197,7 @@ describe('JSONDBFS Driver', function testSpec() {
     database['Users'].find(function afterFind(err, documents) {
       assert.equal(err, undefined);
       assert(documents.length, 2);
-      console.log(documents);
-      done();
+      return done();
     });
   });
 
@@ -203,12 +205,10 @@ describe('JSONDBFS Driver', function testSpec() {
     database['Users'].find({name: 'John'}, function afterFind(err, documents) {
       assert.equal(err, undefined);
       assert(documents.length, 1);
-      console.log(documents);
       database['Users'].findOne({name: 'John'}, function afterFind(err, user) {
         assert.equal(err, undefined);
         assert.notEqual(user, null);
-        console.log(user);
-        done();
+        return done();
       });
     });
   });
@@ -220,8 +220,7 @@ describe('JSONDBFS Driver', function testSpec() {
     }, function afterFindAndModify(err, ret) {
       assert.equal(err, undefined);
       assert.notEqual(ret, null);
-      console.log(ret);
-      done();
+      return done();
     });
   });
 
@@ -232,8 +231,7 @@ describe('JSONDBFS Driver', function testSpec() {
     }, {upsert: true}, function afterUpdate(err, ret) {
       assert.equal(err, undefined);
       assert.notEqual(ret, null);
-      console.log(ret);
-      done();
+      return done();
     });
   });
 
@@ -241,7 +239,7 @@ describe('JSONDBFS Driver', function testSpec() {
     database['Users'].count({name: 'John'}, function afterCount(err, count) {
       assert.equal(err, undefined);
       assert(count, 1);
-      done();
+      return done();
     });
   });
 
@@ -250,7 +248,7 @@ describe('JSONDBFS Driver', function testSpec() {
       assert.equal(err, undefined);
       database['Users'].remove({name: 'Manuel Martins'}, function afterRemove(err) {
         assert.equal(err, undefined);
-        done();
+        return done();
       });
     });
   });
@@ -268,7 +266,7 @@ describe('JSONDBFS Driver', function testSpec() {
               assert.notEqual(err, undefined);
               database['Users'].remove(function afterRemove(err) {
                 assert.notEqual(err, undefined);
-                done();
+                return done();
               });
             });
           });
@@ -293,7 +291,7 @@ describe('JSONDBFS Driver', function testSpec() {
     } catch (err) {
       assert.equal(err, undefined);
     }
-    done();
+    return done();
   });
 
   it('should find an element in a big file (47.5MB)', function test(done) {
@@ -302,7 +300,7 @@ describe('JSONDBFS Driver', function testSpec() {
       db.big.find({"_id": "560d4ce67666691542f88260"}, function afterFind(err, data) {
         assert.equal(err, undefined);
         assert.notEqual(data, undefined);
-        done();
+        return done();
       });
     });
   });
