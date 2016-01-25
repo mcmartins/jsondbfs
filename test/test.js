@@ -55,6 +55,7 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should insert 250K objects', function test(done) {
+    this.timeout(15000);
     JSONDBFSDriver.connect(['AnotherCollection'], function afterConnect(err, db) {
         db.AnotherCollection.insert(data, function afterInsert(err, res) {
           assert.equal(err, undefined);
@@ -66,7 +67,7 @@ describe('JSONDBFS Driver', function testSpec() {
   });
 
   it('should insert 300 concurrent objects', function test(done) {
-    this.timeout(10000);
+    this.timeout(15000);
     var concurrentObjs = 300;
     JSONDBFSDriver.connect(['Concurrent'], function afterConnect(err, db) {
       async.times(concurrentObjs, function forEach(n, next) {
