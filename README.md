@@ -124,9 +124,9 @@ var database;
 var driverOptions = {
  path: '/path/to/store/collections', 
  inMemory: true, 
- lockWait: 60000, 
+ lockWait: 10000, 
  lockPollPeriod: 50, 
- lockStale: 60000, 
+ lockStale: 10000, 
  lockRetries: 100, 
  lockRetryWait: 50
  };
