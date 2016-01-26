@@ -104,7 +104,7 @@ module.exports.connect = function (collections, options, callback) {
           return callback(err);
         } else {
           console.log('JSON collections database path is: ' + self._db._path);
-          return callback(null, self);
+          return callback(undefined, self);
         }
       });
     }

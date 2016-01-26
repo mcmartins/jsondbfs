@@ -208,7 +208,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
       assert(documents.length, 1);
       database['Users'].findOne({name: 'John'}, function afterFind(err, user) {
         assert.equal(err, undefined);
-        assert.notEqual(user, null);
+        assert.notEqual(user, undefined);
         return done();
       });
     });
@@ -220,7 +220,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
       token: null
     }, function afterFindAndModify(err, ret) {
       assert.equal(err, undefined);
-      assert.notEqual(ret, null);
+      assert.notEqual(ret, undefined);
       return done();
     });
   });
@@ -231,7 +231,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
       token: null
     }, {upsert: true}, function afterUpdate(err, ret) {
       assert.equal(err, undefined);
-      assert.notEqual(ret, null);
+      assert.notEqual(ret, undefined);
       return done();
     });
   });
@@ -489,7 +489,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
       assert(documents.length, 1);
       database['Users'].findOne({name: 'John'}, function afterFind(err, user) {
         assert.equal(err, undefined);
-        assert.notEqual(user, null);
+        assert.notEqual(user, undefined);
         return done();
       });
     });
@@ -501,7 +501,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
       token: null
     }, function afterFindAndModify(err, ret) {
       assert.equal(err, undefined);
-      assert.notEqual(ret, null);
+      assert.notEqual(ret, undefined);
       return done();
     });
   });
@@ -512,7 +512,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
       token: null
     }, {upsert: true}, function afterUpdate(err, ret) {
       assert.equal(err, undefined);
-      assert.notEqual(ret, null);
+      assert.notEqual(ret, undefined);
       return done();
     });
   });
