@@ -96,7 +96,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should fail creating a connection without passing at least one collection', function test(done) {
-    JSONDBFSDriver.connect(function afterConnect(err, db) {
+    JSONDBFSDriver.connect({driver: 'disk'}, function afterConnect(err, db) {
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
       JSONDBFSDriver.connect('', function (err, db) {

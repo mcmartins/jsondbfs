@@ -59,7 +59,7 @@ module.exports.connect = function (collections, options, callback) {
     // callback should exist and should be a function, we cannot proceed without
     throw new Error('No callback provided!');
   }
-  if (!collections) {
+  if (!collections || (!_.isArray(collections) && typeof collections !== 'string')) {
     // at least one collection should be a provided, we cannot proceed
     return callback(new Error('No collections provided!'));
   }
