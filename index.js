@@ -28,7 +28,7 @@ var path = require('path');
 var _ = require('underscore');
 var async = require('async');
 var Collection = require('./lib/collection');
-var IOHandler = require('./lib/ioHandler');
+var util = require('./lib/util');
 
 /**
  * JSON DB FS Main entry point
@@ -38,7 +38,8 @@ var IOHandler = require('./lib/ioHandler');
  *                    the collection names will be created as files in the specified 'path'
  * @param {Object} options
  * @param {String} options.path defaults to '/tmp/'
- * @param {String} options.inMemory defaults to 'false'
+ * @param {String} options.driver one of ['memory', 'disk'], defaults to 'disk'
+ * @param {float} options.flush when using 'memory' driver this will be used as the time to flush memory to disk, defaults to 10000ms (10s)
  * @param callback executes the callback with the default signature (err, database)
  */
 module.exports.connect = function (collections, options, callback) {
@@ -64,20 +65,17 @@ module.exports.connect = function (collections, options, callback) {
   }
   var self = this;
   // internal properties
-  self._path = options.path || '/tmp/';
-  self._inMemory = options.inMemory || false;
-  self._ioHandler = new IOHandler(options);
   self._db = {};
+  self._db._path = options.path || '/tmp/';
+  self._db._driver = options.driver || 'disk';
+  self._db._flush = options.flush || 10000;
   async.waterfall([
     function validateDatabasePath(next) {
-      self._ioHandler.pathExists(self._path, function afterCheck(exists) {
+      util.fileSystem.exists(self._db._path, function afterCheck(exists) {
         if (!exists) {
-          console.error('Cannot access the following path: ' + self._path);
-          return callback(new Error('Cannot access the following path: ' + self._path));
+          console.error('Cannot access the following path: ' + self._db._path);
+          return callback(new Error('Cannot access the following path: ' + self._db._path));
         }
-        self._db._path = self._path;
-        self._db._inMemory = self._inMemory;
-        self._db._ioHandler = self._ioHandler;
         return next();
       });
     },
@@ -87,12 +85,12 @@ module.exports.connect = function (collections, options, callback) {
       }
       // in parallel initialize each collection
       async.each(collections, function attachOrCreate(collection, next) {
-        var fullPath = path.join(self._path, collection + '.json');
+        var filePath = path.join(self._db._path, collection + '.json');
         console.log('The following Collection is about to be attached: ' + collection);
-        self[collection] = new Collection({db: self, path: fullPath});
-        self._ioHandler.pathExists(fullPath, function afterCheck(exists) {
+        self[collection] = new Collection({db: self, file: filePath});
+        util.fileSystem.exists(filePath, function afterCheck(exists) {
           if (!exists) {
-            self._ioHandler.writeFile(fullPath, function afterWriteFile(err) {
+            util.fileSystem.write(filePath, function afterWriteFile(err) {
               return next(err);
             });
           } else {
@@ -105,7 +103,7 @@ module.exports.connect = function (collections, options, callback) {
           console.error('Collection names must not contain any extension or any character not allowed in a filename.');
           return callback(err);
         } else {
-          console.log('JSON collections database path is: ' + self._path);
+          console.log('JSON collections database path is: ' + self._db._path);
           return callback(null, self);
         }
       });

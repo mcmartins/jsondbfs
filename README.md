@@ -11,7 +11,8 @@
 # README
 
 JSON FileSystem Database is a JSON database such as MongoDB backed by FileSystem IO.<br/>
-Implemented with **Pessimistic Transaction Locking** approach.<br/>
+Currently supports 2 types of persistence drivers: Memory and Disk
+Disk is Implemented with **Pessimistic Transaction Locking** approach.<br/>
 All methods are asynchronous and accessing / filtering is executed in parallel using [async](https://github.com/caolan/async).<br/>
 Based on [Jalalhejazi](https://github.com/Jalalhejazi), [jsonfs](https://github.com/Jalalhejazi/jsonfs).
 
@@ -31,7 +32,7 @@ Criteria queries on JSON objects Mongo style [json-criteria](https://github.com/
 
   // receives an array containing the collections you want to create / use ['Users', 'Others']
   // existing collections will be attached
-  JSONDBFSDriver.connect(['Users'], {path: '/path/to/store/collections'}, function(err, db){
+  JSONDBFSDriver.connect(['Users'], {path: '/path/to/store/collections', driver: 'memory'}, function(err, db){
     database = db;
   });
 
@@ -123,12 +124,8 @@ var database;
 // driver options
 var driverOptions = {
  path: '/path/to/store/collections', 
- inMemory: true, 
- lockWait: 10000, 
- lockPollPeriod: 50, 
- lockStale: 10000, 
- lockRetries: 100, 
- lockRetryWait: 50
+ driver: 'memory' // defaults to 'disk'
+ flush: 10000 // time interval to flush memory to disk
  };
 JSONDBFSDriver.connect(['Collection'], driverOptions, callback);
 ...
@@ -146,7 +143,7 @@ When initializing the Driver you can pass 2 options:
 
 ```bash
 options.path - The path to store the collection files. Accepts a String. Defaults to '/tmp/'.
-options.inMemory - Should maintain a copy of the collection inMemory. Accepts a boolean 'true' or 'false'. Defaults to 'false'. **Not Implemented**.
+options.driver - One of ['memory', 'disk'], defaults to disk
 ```
 
 ### Database Collection File Lock options
