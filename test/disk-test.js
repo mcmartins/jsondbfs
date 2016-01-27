@@ -25,8 +25,6 @@
 var JSONDBFSDriver = require('../index');
 var assert = require('assert');
 var async = require('async');
-var database;
-var data = [];
 
 function generateRandomName() {
   var text = "";
@@ -38,17 +36,12 @@ function generateRandomName() {
   return text;
 }
 
-JSONDBFSDriver.connect(['DiskDriverCollection', 'DiskDriverCollectionConcurrent', 'Users'], function afterConnect(err, db) {
-  if (err) {
-    throw err;
-  }
-  database = db;
-});
-
 /**
  * JSON DB FS Test Specification for Disk Driver
  */
 describe('JSONDBFS Disk Driver', function testSpec() {
+  var database;
+  var data = [];
 
   before(function(done) {
     this.timeout(10000);
@@ -59,7 +52,16 @@ describe('JSONDBFS Disk Driver', function testSpec() {
       });
       next();
     }, function after(err, iter) {
-      return done(err);
+      if (err) {
+        throw err;
+      }
+      JSONDBFSDriver.connect(['DiskDriverCollection', 'DiskDriverCollectionConcurrent', 'Users'], function afterConnect(err, db) {
+        if (err) {
+          throw err;
+        }
+        database = db;
+        return done(err);
+      });
     });
   });
 

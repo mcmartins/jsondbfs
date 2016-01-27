@@ -36,10 +36,12 @@ var util = require('./lib/util');
  *
  * @param collections an array of collections names
  *                    the collection names will be created as files in the specified 'path'
- * @param {Object} options
+ * @param {object} options
  * @param {string} options.path defaults to '/tmp/'
  * @param {string} options.driver one of ['memory', 'disk'], defaults to 'disk'
- * @param {float} options.flush when using 'memory' driver this will be used as the time to flush memory to disk, defaults to 10000ms (10s)
+ * @param {object} options.memory
+ * @param {boolean} options.memory.flush true if you want to flush memory to file, this will be used as the time to flush memory to disk, defaults to false
+ * @param {float} options.memory.flushInterval when using 'memory' driver this will be used as the time to flush memory to disk, defaults to 10000ms (10s)
  * @param callback executes the callback with the default signature (err, database)
  */
 module.exports.connect = function (collections, options, callback) {
@@ -68,7 +70,7 @@ module.exports.connect = function (collections, options, callback) {
   self._db = {};
   self._db._path = options.path || '/tmp/';
   self._db._driver = options.driver || 'disk';
-  self._db._flush = options.flush || 10000;
+  self._db._memory = options.memory || {flush: false};
   async.waterfall([
     function validateDatabasePath(next) {
       util.fileSystem.exists(self._db._path, function afterCheck(exists) {

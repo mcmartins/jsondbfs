@@ -7,7 +7,7 @@
   "engine": "node >= 0.12.0",
   "main": "./index",
   "scripts": {
-    "test": "rm /tmp/*.json; cp test/big.json /tmp/; mocha test/memory-test.js"
+    "test": "rm /tmp/*.json; cp test/big.json /tmp/; mocha test/"
   },
   "repository": {
     "type": "git",

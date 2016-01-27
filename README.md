@@ -125,8 +125,11 @@ var database;
 // driver options
 var driverOptions = {
  path: '/path/to/store/collections', 
- driver: 'memory'
- flush: 10000
+ driver: 'memory',
+ memory: {
+    flush: true,
+    flushInterval: 10000
+  }
  };
 JSONDBFSDriver.connect(['Collection'], driverOptions, callback);
 ...

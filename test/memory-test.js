@@ -25,8 +25,6 @@
 var JSONDBFSDriver = require('../index');
 var assert = require('assert');
 var async = require('async');
-var database;
-var data = [];
 
 function generateRandomName() {
   var text = "";
@@ -38,45 +36,48 @@ function generateRandomName() {
   return text;
 }
 
-JSONDBFSDriver.connect(['MemoryDriverCollection', 'MemoryDriverCollectionConcurrent', 'Users'], {driver: 'memory'}, function afterConnect(err, db) {
-  if (err) {
-    throw err;
-  }
-  database = db;
-});
-
-
 /**
  * JSON DB FS Test Specification for Memory Driver
  */
 describe('JSONDBFS Memory Driver', function testSpec() {
+  var database;
+  var data = [];
 
   before(function(done) {
     this.timeout(10000);
-    async.times(250000, function forEach(n, next) {
+    async.times(1000000, function forEach(n, next) {
       data.push({
         name: generateRandomName(),
         id: n
       });
       next();
     }, function after(err, iter) {
+      if (err) {
+        throw err;
+      }
+      JSONDBFSDriver.connect(['MemoryDriverCollection', 'MemoryDriverCollectionConcurrent', 'Users'], {
+        driver: 'memory'
+      }, function afterConnect(err, db) {
+        if (err) {
+          throw err;
+        }
+        database = db;
+      });
       return done(err);
     });
   });
 
-  it('should insert 250K objects', function test(done) {
+  it('should insert 1M objects', function test(done) {
     this.timeout(15000);
     database.MemoryDriverCollection.insert(data, function afterInsert(err, res) {
       assert.equal(err, undefined);
-      assert.notEqual(res, undefined);
-      //assert(data.length, res.length);
       return done();
     });
   });
 
-  it('should insert 300 concurrent objects', function test(done) {
+  it('should insert 3K concurrent objects', function test(done) {
     this.timeout(15000);
-    var concurrentObjs = 300;
+    var concurrentObjs = 3000;
     async.times(concurrentObjs, function forEach(n, next) {
       database.MemoryDriverCollectionConcurrent.insert({
         name: generateRandomName(),
@@ -84,7 +85,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
       }, function afterInsert(err, data) {
         assert.equal(err, undefined);
         assert.notEqual(data, undefined);
-        next(err);
+        return next(err);
       });
     }, function afterIteration(err, iter) {
       assert.equal(err, undefined);
@@ -357,6 +358,9 @@ describe('JSONDBFS Memory Driver', function testSpec() {
     JSONDBFSDriver.connect(['big'], {
       driver: 'memory'
     }, function afterConnect(err, db) {
+      if (err) {
+        throw err;
+      }
       db.big.find({
         "_id": "560d4ce67666691542f88260"
       }, function afterFind(err, data) {
@@ -366,7 +370,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
       });
     });
   });
-  
+
   it('should ensure data is being flushed to disk', function test(done) {
     return done();
   });
