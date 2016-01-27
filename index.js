@@ -88,7 +88,7 @@ module.exports.connect = function (collections, options, callback) {
       // in parallel initialize each collection
       async.each(collections, function attachOrCreate(collection, next) {
         var filePath = path.join(self._db._path, collection + '.json');
-        console.log('The %s Collection is about to be attached', collection);
+        console.log('\'%s\' Collection is about to be attached', collection);
         util.fileSystem.exists(filePath, function afterCheck(exists) {
           if (!exists) {
             util.fileSystem.write(filePath, function afterWriteFile(err) {
@@ -96,13 +96,13 @@ module.exports.connect = function (collections, options, callback) {
               if (err) {
                 return next(err);
               }
-              console.log('The File %s has been created', collection);
+              console.log('File \'%s\' has been created for Collection \'%s\'', filePath, collection);
               self[collection] = new Collection({db: self, file: filePath});
               return next();
             });
           } else {
             // the file exists we're good to go
-            console.log('The File %s has been attached', collection);
+            console.log('File \'%s\' has been attached for Collection \'%s\'', filePath, collection);
             self[collection] = new Collection({db: self, file: filePath});
             return next();
           }

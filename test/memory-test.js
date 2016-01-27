@@ -46,7 +46,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
 
   before(function(done) {
     this.timeout(10000);
-    async.times(1000, function forEach(n, next) {
+    async.times(10000, function forEach(n, next) {
       data.push({
         name: generateRandomName(),
         id: n
@@ -56,7 +56,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
       if (err) {
         return done(err);
       }
-      JSONDBFSDriver.connect(['MemoryDriverCollection', 'MemoryDriverCollectionConcurrent', 'Users'], {
+      JSONDBFSDriver.connect(['MemoryDriverCollection', 'MemoryDriverCollectionConcurrent', 'MemoryUsers'], {
         driver: 'memory'
       }, function afterConnect(err, db) {
         if (err) {
@@ -78,7 +78,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
 
   it('should insert 10K concurrent objects', function test(done) {
     this.timeout(15000);
-    var concurrentObjs = 100;
+    var concurrentObjs = 10000;
     async.times(concurrentObjs, function forEach(n, next) {
       database.MemoryDriverCollectionConcurrent.insert({
         name: generateRandomName(),
@@ -182,12 +182,12 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should insert a new object', function test(done) {
-    database['Users'].insert({
+    database['MemoryUsers'].insert({
       name: 'Manuel',
       roles: ['Admin', 'Super']
     }, function afterInsert(err) {
       assert.equal(err, undefined);
-      database['Users'].insert({
+      database['MemoryUsers'].insert({
         name: 'John',
         roles: ['User']
       }, function afterInsert(err) {
@@ -198,14 +198,14 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should fail insert if no object is passed', function test(done) {
-    database['Users'].insert(function afterInsert(err) {
+    database['MemoryUsers'].insert(function afterInsert(err) {
       assert.notEqual(err, undefined);
       return done();
     });
   });
 
   it('should update an object', function test(done) {
-    database['Users'].update({
+    database['MemoryUsers'].update({
       name: 'Manuel'
     }, {
       name: 'Manuel Martins',
@@ -218,7 +218,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should count the number of objects', function test(done) {
-    database['Users'].count(function afterCount(err, count) {
+    database['MemoryUsers'].count(function afterCount(err, count) {
       assert.equal(err, undefined);
       assert(count, 1);
       return done();
@@ -226,7 +226,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should find all users', function test(done) {
-    database['Users'].find(function afterFind(err, documents) {
+    database['MemoryUsers'].find(function afterFind(err, documents) {
       assert.equal(err, undefined);
       assert(documents.length, 2);
       return done();
@@ -234,12 +234,12 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should find a particular user', function test(done) {
-    database['Users'].find({
+    database['MemoryUsers'].find({
       name: 'John'
     }, function afterFind(err, documents) {
       assert.equal(err, undefined);
       assert(documents.length, 1);
-      database['Users'].findOne({
+      database['MemoryUsers'].findOne({
         name: 'John'
       }, function afterFind(err, user) {
         assert.equal(err, undefined);
@@ -250,7 +250,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should find a particular user and update', function test(done) {
-    database['Users'].findAndModify({
+    database['MemoryUsers'].findAndModify({
       name: 'Manuel Martins'
     }, {
       name: 'Manuel Martins',
@@ -263,7 +263,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should insert if document is not found to update', function test(done) {
-    database['Users'].update({
+    database['MemoryUsers'].update({
       name: 'Manuel'
     }, {
       name: 'Manuel Martins',
@@ -278,7 +278,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should count the number of objects', function test(done) {
-    database['Users'].count({
+    database['MemoryUsers'].count({
       name: 'John'
     }, function afterCount(err, count) {
       assert.equal(err, undefined);
@@ -288,11 +288,11 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should remove an object', function test(done) {
-    database['Users'].remove({
+    database['MemoryUsers'].remove({
       name: 'John'
     }, function afterRemove(err) {
       assert.equal(err, undefined);
-      database['Users'].remove({
+      database['MemoryUsers'].remove({
         name: 'Manuel Martins'
       }, function afterRemove(err) {
         assert.equal(err, undefined);
@@ -302,17 +302,17 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should throw if no criteria is specified', function test(done) {
-    database['Users'].findOne(function afterFind(err) {
+    database['MemoryUsers'].findOne(function afterFind(err) {
       assert.notEqual(err, undefined);
-      database['Users'].findAndModify(function afterFindAndModify(err) {
+      database['MemoryUsers'].findAndModify(function afterFindAndModify(err) {
         assert.notEqual(err, undefined);
-        database['Users'].findAndModify({}, function afterFindAndModify(err) {
+        database['MemoryUsers'].findAndModify({}, function afterFindAndModify(err) {
           assert.notEqual(err, undefined);
-          database['Users'].update(function afterUpdate(err) {
+          database['MemoryUsers'].update(function afterUpdate(err) {
             assert.notEqual(err, undefined);
-            database['Users'].update({}, function afterUpdate(err) {
+            database['MemoryUsers'].update({}, function afterUpdate(err) {
               assert.notEqual(err, undefined);
-              database['Users'].remove(function afterRemove(err) {
+              database['MemoryUsers'].remove(function afterRemove(err) {
                 assert.notEqual(err, undefined);
                 return done();
               });
@@ -325,7 +325,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
 
   it('should use the no op callback', function test(done) {
     try {
-      database['Users'].insert({
+      database['MemoryUsers'].insert({
         name: 'Maria',
         roles: ['Admin', 'Super']
       });
@@ -334,7 +334,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
       assert.equal(err, undefined);
     }
     try {
-      database['Users'].update({
+      database['MemoryUsers'].update({
         name: 'Maria'
       }, {
         name: 'Maria D.'
@@ -344,7 +344,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
       assert.equal(err, undefined);
     }
     try {
-      database['Users'].remove({
+      database['MemoryUsers'].remove({
         name: 'Maria'
       });
     }
@@ -370,7 +370,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
     });
   });
 
-  it('should ensure data is being flushed to disk', function test(done) {
+  /*it('should ensure data is being flushed to disk', function test(done) {
     this.timeout(10000);
     JSONDBFSDriver.connect(['FlushCollection'], {
       driver: 'memory',
@@ -393,10 +393,9 @@ describe('JSONDBFS Memory Driver', function testSpec() {
           stats = fs.statSync(flushFile);
           var fileSizeInBytes = stats["size"];
           assert.notEqual(fileSizeInBytes, originalFileSizeInBytes);
-          console.log('sim');
           return done();
         }, 6000);
     });
-  });
+  });*/
 
 });

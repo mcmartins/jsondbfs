@@ -10,9 +10,9 @@
 
 # README
 
-JSON FileSystem Database is a JSON database such as MongoDB backed by FileSystem IO.<br/>
+JSON FileSystem Database is a JSON database such as MongoDB backed by FileSystem.<br/>
 Currently supports 2 types of data drivers: **Memory** and **Disk**.<br/>
-Memory driver is very performant and flushes data to disk every 10s (configurable).<br/>
+Memory driver is very performant. It is possible to flush data to disk (configurable).<br/>
 Disk driver is less performant an is implemented with **Pessimistic Transaction Locking** approach.<br/>
 All methods are asynchronous and accessing / filtering is executed in parallel using [async](https://github.com/caolan/async).<br/>
 Based on [Jalalhejazi](https://github.com/Jalalhejazi), [jsonfs](https://github.com/Jalalhejazi/jsonfs).
@@ -81,7 +81,7 @@ Criteria queries on JSON objects Mongo style [json-criteria](https://github.com/
     // returns the first document that matches the criteria
     ...
   });
-  
+
   database.Users.remove({name: 'Manuel'}, function(err, success){
     // returns true if records were removed
     ...
@@ -109,7 +109,7 @@ Support for [Query and Projection Operators](https://docs.mongodb.org/manual/ref
       // returns the documents that matches the criteria
       ...
     });
-    
+
     ...
 ```
 
@@ -124,7 +124,7 @@ var database;
 
 // driver options
 var driverOptions = {
- path: '/path/to/store/collections', 
+ path: '/path/to/store/collections',
  driver: 'memory',
  memory: {
     flush: true,
