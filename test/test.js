@@ -43,12 +43,12 @@ describe('JSONDBFS Disk Driver', function testSpec() {
     }
     return text;
   }
-  
-  before(function(done){
+
+  before(function (done) {
     this.timeout(10000);
     async.times(250000, function forEach(n, next) {
-        data.push({name: generateRandomName(), id: n});
-        next();
+      data.push({name: generateRandomName(), id: n});
+      next();
     }, function after(err, iter) {
       return done(err);
     });
@@ -57,12 +57,12 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   it('should insert 250K objects', function test(done) {
     this.timeout(15000);
     JSONDBFSDriver.connect(['AnotherCollection'], function afterConnect(err, db) {
-        db.AnotherCollection.insert(data, function afterInsert(err, res) {
-          assert.equal(err, undefined);
-          assert.notEqual(res, undefined);
-          //assert(data.length, res.length);
-          return done();
-        });
+      db.AnotherCollection.insert(data, function afterInsert(err, res) {
+        assert.equal(err, undefined);
+        assert.notEqual(res, undefined);
+        //assert(data.length, res.length);
+        return done();
+      });
     });
   });
 
@@ -72,6 +72,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
     JSONDBFSDriver.connect(['Concurrent'], function afterConnect(err, db) {
       async.times(concurrentObjs, function forEach(n, next) {
         db.Concurrent.insert({name: generateRandomName(), id: n}, function afterInsert(err, data) {
+          assert.equal(err, undefined);
           assert.notEqual(data, undefined);
           next(err);
         });
@@ -167,7 +168,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
       });
     });
   });
-  
+
   it('should fail insert if no object is passed', function test(done) {
     database['Users'].insert(function afterInsert(err) {
       assert.notEqual(err, undefined);
@@ -324,12 +325,12 @@ describe('JSONDBFS Memory Driver', function testSpec() {
     }
     return text;
   }
-  
-  before(function(done){
+
+  before(function (done) {
     this.timeout(10000);
     async.times(250000, function forEach(n, next) {
-        data.push({name: generateRandomName(), id: n});
-        next();
+      data.push({name: generateRandomName(), id: n});
+      next();
     }, function after(err, iter) {
       return done(err);
     });
@@ -338,12 +339,12 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   it('should insert 250K objects', function test(done) {
     this.timeout(15000);
     JSONDBFSDriver.connect(['AnotherCollection'], {driver: 'memory'}, function afterConnect(err, db) {
-        db.AnotherCollection.insert(data, function afterInsert(err, res) {
-          assert.equal(err, undefined);
-          assert.notEqual(res, undefined);
-          //assert(data.length, res.length);
-          return done();
-        });
+      db.AnotherCollection.insert(data, function afterInsert(err, res) {
+        assert.equal(err, undefined);
+        assert.notEqual(res, undefined);
+        //assert(data.length, res.length);
+        return done();
+      });
     });
   });
 
@@ -353,6 +354,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
     JSONDBFSDriver.connect(['Concurrent'], {driver: 'memory'}, function afterConnect(err, db) {
       async.times(concurrentObjs, function forEach(n, next) {
         db.Concurrent.insert({name: generateRandomName(), id: n}, function afterInsert(err, data) {
+          assert.equal(err, undefined);
           assert.notEqual(data, undefined);
           next(err);
         });
@@ -448,7 +450,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
       });
     });
   });
-  
+
   it('should fail insert if no object is passed', function test(done) {
     database['Users'].insert(function afterInsert(err) {
       assert.notEqual(err, undefined);

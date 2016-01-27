@@ -37,8 +37,8 @@ var util = require('./lib/util');
  * @param collections an array of collections names
  *                    the collection names will be created as files in the specified 'path'
  * @param {Object} options
- * @param {String} options.path defaults to '/tmp/'
- * @param {String} options.driver one of ['memory', 'disk'], defaults to 'disk'
+ * @param {string} options.path defaults to '/tmp/'
+ * @param {string} options.driver one of ['memory', 'disk'], defaults to 'disk'
  * @param {float} options.flush when using 'memory' driver this will be used as the time to flush memory to disk, defaults to 10000ms (10s)
  * @param callback executes the callback with the default signature (err, database)
  */
