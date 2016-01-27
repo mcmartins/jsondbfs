@@ -11,16 +11,17 @@
 # README
 
 JSON FileSystem Database is a JSON database such as MongoDB backed by FileSystem IO.<br/>
-Currently supports 2 types of persistence drivers: Memory and Disk.<br/>
-Disk is Implemented with **Pessimistic Transaction Locking** approach.<br/>
+Currently supports 2 types of data drivers: **Memory** and **Disk**.<br/>
+Memory driver is very performant and flushes data to disk every 10s (configurable).<br/>
+Disk driver is less performant an is implemented with **Pessimistic Transaction Locking** approach.<br/>
 All methods are asynchronous and accessing / filtering is executed in parallel using [async](https://github.com/caolan/async).<br/>
 Based on [Jalalhejazi](https://github.com/Jalalhejazi), [jsonfs](https://github.com/Jalalhejazi/jsonfs).
 
 # Dependencies
 
 Internal unique ids generated with [node-uuid](https://github.com/broofa/node-uuid).<br/>
-Object utility [underscore](https://github.com/jashkenas/underscore).<br/>
-Methods implemented using asynchronous and parallel strategies from [async](https://github.com/caolan/async).<br/>
+Object utilities with [underscore](https://github.com/jashkenas/underscore).<br/>
+Methods implemented using asynchronous and parallel strategies with [async](https://github.com/caolan/async).<br/>
 Pessimistic transaction locking is performed using [lockfile](https://github.com/npm/lockfile).<br/>
 Criteria queries on JSON objects Mongo style [json-criteria](https://github.com/mirek/node-json-criteria).
 
@@ -124,8 +125,8 @@ var database;
 // driver options
 var driverOptions = {
  path: '/path/to/store/collections', 
- driver: 'memory' // defaults to 'disk'
- flush: 10000 // time interval to flush memory to disk
+ driver: 'memory'
+ flush: 10000
  };
 JSONDBFSDriver.connect(['Collection'], driverOptions, callback);
 ...
@@ -139,31 +140,17 @@ database.Collection.remove(criteria, {multi: false}, callback);
 
 ## Driver options
 
-When initializing the Driver you can pass 2 options:
+When initializing the Driver you can pass 3 options:
 
 ```bash
 options.path - The path to store the collection files. Accepts a String. Defaults to '/tmp/'.
 options.driver - One of ['memory', 'disk'], defaults to disk
+options.flush - time interval to flush memory to disk, only used if driver is 'memory'
 ```
-
-### Database Collection File Lock options
-
-Using a **Pessimistic Transaction Locking** approach, the collection files are protected using a transaction locking module.
-The options to tune the lock are as follows:
-
-```bash
-options.lockWait - Time in ms to wait for lock release.
-options.lockPollPeriod - Period in ms in which it polls to check if the lock has expired.
-options.lockStale - A number of milliseconds before locks are considered to have expired.
-options.lockRetries - Used by lock and lockSync. Retry n number of times before giving up.
-options.lockRetryWait - Used by lock. Wait n milliseconds before retrying.
-```
-
-Please check [lockfile](https://github.com/npm/lockfile).
 
 ## Collections options
 
-When updating a record you can pass 2 options:
+When updating a record you can pass 3 options:
 
 ```bash
 options.upsert - If record is not found and this options is set to true, a new record will be created. Accepts a boolean 'true' or 'false'. Defaults to 'false'.<br/>
@@ -177,7 +164,7 @@ When removing or finding you can pass 1 option:
 options.multi - Should update multiple records if they match. Accepts a boolean 'true' or 'false'. Defaults to 'true'.
 ```
 
-Please check the implementation ands tests for more details.
+Please check the [tests](https://github.com/mcmartins/jsondbfs/tree/master/test) for more details.
 
 # License
 

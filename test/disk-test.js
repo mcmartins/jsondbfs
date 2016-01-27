@@ -26,28 +26,37 @@ var JSONDBFSDriver = require('../index');
 var assert = require('assert');
 var async = require('async');
 var database;
+var data = [];
+
+function generateRandomName() {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+  for (var i = 0; i < 5; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+
+JSONDBFSDriver.connect(['DiskDriverCollection', 'DiskDriverCollectionConcurrent', 'Users'], function afterConnect(err, db) {
+  if (err) {
+    throw err;
+  }
+  database = db;
+});
 
 /**
  * JSON DB FS Test Specification for Disk Driver
  */
 describe('JSONDBFS Disk Driver', function testSpec() {
 
-  var data = [];
-
-  function generateRandomName() {
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-    for (var i = 0; i < 5; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-  }
-
-  before(function (done) {
+  before(function(done) {
     this.timeout(10000);
     async.times(250000, function forEach(n, next) {
-      data.push({name: generateRandomName(), id: n});
+      data.push({
+        name: generateRandomName(),
+        id: n
+      });
       next();
     }, function after(err, iter) {
       return done(err);
@@ -56,40 +65,40 @@ describe('JSONDBFS Disk Driver', function testSpec() {
 
   it('should insert 250K objects', function test(done) {
     this.timeout(15000);
-    JSONDBFSDriver.connect(['AnotherCollection'], function afterConnect(err, db) {
-      db.AnotherCollection.insert(data, function afterInsert(err, res) {
-        assert.equal(err, undefined);
-        assert.notEqual(res, undefined);
-        //assert(data.length, res.length);
-        return done();
-      });
+    database.DiskDriverCollection.insert(data, function afterInsert(err, res) {
+      assert.equal(err, undefined);
+      assert.notEqual(res, undefined);
+      return done();
     });
   });
 
   it('should insert 300 concurrent objects', function test(done) {
     this.timeout(15000);
     var concurrentObjs = 300;
-    JSONDBFSDriver.connect(['Concurrent'], function afterConnect(err, db) {
-      async.times(concurrentObjs, function forEach(n, next) {
-        db.Concurrent.insert({name: generateRandomName(), id: n}, function afterInsert(err, data) {
-          assert.equal(err, undefined);
-          assert.notEqual(data, undefined);
-          next(err);
-        });
-      }, function afterIteration(err, iter) {
+    async.times(concurrentObjs, function forEach(n, next) {
+      database.DiskDriverCollectionConcurrent.insert({
+        name: generateRandomName(),
+        id: n
+      }, function afterInsert(err, data) {
         assert.equal(err, undefined);
-        assert.notEqual(iter, undefined);
-        db.Concurrent.count(function afterCount(err, count) {
-          assert.equal(err, undefined);
-          assert.equal(concurrentObjs, count);
-          return done();
-        });
+        assert.notEqual(data, undefined);
+        next(err);
+      });
+    }, function afterIteration(err, iter) {
+      assert.equal(err, undefined);
+      assert.notEqual(iter, undefined);
+      database.DiskDriverCollectionConcurrent.count(function afterCount(err, count) {
+        assert.equal(err, undefined);
+        assert.equal(concurrentObjs, count);
+        return done();
       });
     });
   });
 
   it('should fail creating a connection to an invalid path', function test(done) {
-    JSONDBFSDriver.connect(['Collection'], {path: '/invalid'}, function afterConnect(err, db) {
+    JSONDBFSDriver.connect(['Collection'], {
+      path: '/invalid'
+    }, function afterConnect(err, db) {
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
       return done();
@@ -97,16 +106,18 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should fail creating a connection without passing at least one collection', function test(done) {
-    JSONDBFSDriver.connect({driver: 'disk'}, function afterConnect(err, db) {
+    JSONDBFSDriver.connect({
+      driver: 'disk'
+    }, function afterConnect(err, db) {
       assert.notEqual(err, undefined);
       assert.equal(db, undefined);
-      JSONDBFSDriver.connect('', function (err, db) {
+      JSONDBFSDriver.connect('', function(err, db) {
         assert.notEqual(err, undefined);
         assert.equal(db, undefined);
-        JSONDBFSDriver.connect(null, function (err, db) {
+        JSONDBFSDriver.connect(null, function(err, db) {
           assert.notEqual(err, undefined);
           assert.equal(db, undefined);
-          JSONDBFSDriver.connect(undefined, function (err, db) {
+          JSONDBFSDriver.connect(undefined, function(err, db) {
             assert.notEqual(err, undefined);
             assert.equal(db, undefined);
             return done();
@@ -119,7 +130,8 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   it('should fail creating a connection without passing a callback', function test(done) {
     try {
       JSONDBFSDriver.connect('MissingCallback');
-    } catch (err) {
+    }
+    catch (err) {
       assert.notEqual(err, undefined);
     }
     return done();
@@ -142,7 +154,10 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should create a new collection using override options', function test(done) {
-    JSONDBFSDriver.connect(['Override'], {path: '/tmp/', driver: 'disk'}, function afterConnect(err, db) {
+    JSONDBFSDriver.connect(['Override'], {
+      path: '/tmp/',
+      driver: 'disk'
+    }, function afterConnect(err, db) {
       assert.equal(err, undefined);
       assert.notEqual(db, undefined);
       return done();
@@ -160,9 +175,15 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should insert a new object', function test(done) {
-    database['Users'].insert({name: 'Manuel', roles: ['Admin', 'Super']}, function afterInsert(err) {
+    database['Users'].insert({
+      name: 'Manuel',
+      roles: ['Admin', 'Super']
+    }, function afterInsert(err) {
       assert.equal(err, undefined);
-      database['Users'].insert({name: 'John', roles: ['User']}, function afterInsert(err) {
+      database['Users'].insert({
+        name: 'John',
+        roles: ['User']
+      }, function afterInsert(err) {
         assert.equal(err, undefined);
         return done();
       });
@@ -177,7 +198,9 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should update an object', function test(done) {
-    database['Users'].update({name: 'Manuel'}, {
+    database['Users'].update({
+      name: 'Manuel'
+    }, {
       name: 'Manuel Martins',
       token: 'xsf32S123ss'
     }, function afterUpdate(err, ret) {
@@ -204,10 +227,14 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should find a particular user', function test(done) {
-    database['Users'].find({name: 'John'}, function afterFind(err, documents) {
+    database['Users'].find({
+      name: 'John'
+    }, function afterFind(err, documents) {
       assert.equal(err, undefined);
       assert(documents.length, 1);
-      database['Users'].findOne({name: 'John'}, function afterFind(err, user) {
+      database['Users'].findOne({
+        name: 'John'
+      }, function afterFind(err, user) {
         assert.equal(err, undefined);
         assert.notEqual(user, undefined);
         return done();
@@ -216,7 +243,9 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should find a particular user and update', function test(done) {
-    database['Users'].findAndModify({name: 'Manuel Martins'}, {
+    database['Users'].findAndModify({
+      name: 'Manuel Martins'
+    }, {
       name: 'Manuel Martins',
       token: null
     }, function afterFindAndModify(err, ret) {
@@ -227,10 +256,14 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should insert if document is not found to update', function test(done) {
-    database['Users'].update({name: 'Manuel'}, {
+    database['Users'].update({
+      name: 'Manuel'
+    }, {
       name: 'Manuel Martins',
       token: null
-    }, {upsert: true}, function afterUpdate(err, ret) {
+    }, {
+      upsert: true
+    }, function afterUpdate(err, ret) {
       assert.equal(err, undefined);
       assert.notEqual(ret, undefined);
       return done();
@@ -238,7 +271,9 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should count the number of objects', function test(done) {
-    database['Users'].count({name: 'John'}, function afterCount(err, count) {
+    database['Users'].count({
+      name: 'John'
+    }, function afterCount(err, count) {
       assert.equal(err, undefined);
       assert(count, 1);
       return done();
@@ -246,9 +281,13 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should remove an object', function test(done) {
-    database['Users'].remove({name: 'John'}, function afterRemove(err) {
+    database['Users'].remove({
+      name: 'John'
+    }, function afterRemove(err) {
       assert.equal(err, undefined);
-      database['Users'].remove({name: 'Manuel Martins'}, function afterRemove(err) {
+      database['Users'].remove({
+        name: 'Manuel Martins'
+      }, function afterRemove(err) {
         assert.equal(err, undefined);
         return done();
       });
@@ -279,18 +318,30 @@ describe('JSONDBFS Disk Driver', function testSpec() {
 
   it('should use the no op callback', function test(done) {
     try {
-      database['Users'].insert({name: 'Maria', roles: ['Admin', 'Super']});
-    } catch (err) {
+      database['Users'].insert({
+        name: 'Maria',
+        roles: ['Admin', 'Super']
+      });
+    }
+    catch (err) {
       assert.equal(err, undefined);
     }
     try {
-      database['Users'].update({name: 'Maria'}, {name: 'Maria D.'});
-    } catch (err) {
+      database['Users'].update({
+        name: 'Maria'
+      }, {
+        name: 'Maria D.'
+      });
+    }
+    catch (err) {
       assert.equal(err, undefined);
     }
     try {
-      database['Users'].remove({name: 'Maria'});
-    } catch (err) {
+      database['Users'].remove({
+        name: 'Maria'
+      });
+    }
+    catch (err) {
       assert.equal(err, undefined);
     }
     return done();
@@ -299,7 +350,12 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   it('should find an element in a big file (47.5MB)', function test(done) {
     this.timeout(6000);
     JSONDBFSDriver.connect(['big'], function afterConnect(err, db) {
-      db.big.find({"_id": "560d4ce67666691542f88260"}, function afterFind(err, data) {
+      if (err) {
+        throw err;
+      }
+      db.big.find({
+        "_id": "560d4ce67666691542f88260"
+      }, function afterFind(err, data) {
         assert.equal(err, undefined);
         assert.notEqual(data, undefined);
         return done();
