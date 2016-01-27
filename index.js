@@ -66,7 +66,7 @@ module.exports.connect = function (collections, options, callback) {
   var self = this;
   // internal properties
   self._db = {};
-  self._db._path = options.path || '/tmp/';
+  self._db._path = options.path || 'C:\\Users\\Manuel\\Desktop\\New folder';
   self._db._driver = options.driver || 'disk';
   self._db._flush = options.flush || 10000;
   async.waterfall([

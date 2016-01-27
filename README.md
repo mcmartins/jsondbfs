@@ -11,7 +11,7 @@
 # README
 
 JSON FileSystem Database is a JSON database such as MongoDB backed by FileSystem IO.<br/>
-Currently supports 2 types of persistence drivers: Memory and Disk
+Currently supports 2 types of persistence drivers: Memory and Disk.<br/>
 Disk is Implemented with **Pessimistic Transaction Locking** approach.<br/>
 All methods are asynchronous and accessing / filtering is executed in parallel using [async](https://github.com/caolan/async).<br/>
 Based on [Jalalhejazi](https://github.com/Jalalhejazi), [jsonfs](https://github.com/Jalalhejazi/jsonfs).
