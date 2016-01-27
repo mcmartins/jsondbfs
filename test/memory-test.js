@@ -25,6 +25,7 @@
 var JSONDBFSDriver = require('../index');
 var assert = require('assert');
 var async = require('async');
+var fs = require('fs');
 
 function generateRandomName() {
   var text = "";
@@ -45,25 +46,25 @@ describe('JSONDBFS Memory Driver', function testSpec() {
 
   before(function(done) {
     this.timeout(10000);
-    async.times(1000000, function forEach(n, next) {
+    async.times(1000, function forEach(n, next) {
       data.push({
         name: generateRandomName(),
         id: n
       });
-      next();
+      return next();
     }, function after(err, iter) {
       if (err) {
-        throw err;
+        return done(err);
       }
       JSONDBFSDriver.connect(['MemoryDriverCollection', 'MemoryDriverCollectionConcurrent', 'Users'], {
         driver: 'memory'
       }, function afterConnect(err, db) {
         if (err) {
-          throw err;
+          return done(err);
         }
         database = db;
+        return done();
       });
-      return done(err);
     });
   });
 
@@ -75,9 +76,9 @@ describe('JSONDBFS Memory Driver', function testSpec() {
     });
   });
 
-  it('should insert 3K concurrent objects', function test(done) {
+  it('should insert 10K concurrent objects', function test(done) {
     this.timeout(15000);
-    var concurrentObjs = 3000;
+    var concurrentObjs = 100;
     async.times(concurrentObjs, function forEach(n, next) {
       database.MemoryDriverCollectionConcurrent.insert({
         name: generateRandomName(),
@@ -358,9 +359,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
     JSONDBFSDriver.connect(['big'], {
       driver: 'memory'
     }, function afterConnect(err, db) {
-      if (err) {
-        throw err;
-      }
+      assert.equal(err, undefined);
       db.big.find({
         "_id": "560d4ce67666691542f88260"
       }, function afterFind(err, data) {
@@ -372,7 +371,32 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should ensure data is being flushed to disk', function test(done) {
-    return done();
+    this.timeout(10000);
+    JSONDBFSDriver.connect(['FlushCollection'], {
+      driver: 'memory',
+      memory: {
+        flush: true,
+        flushInterval: 3000
+      }
+    }, function afterConnect(err, db) {
+      assert.equal(err, undefined);
+      db.FlushCollection.insert({
+        name: 'Manuel',
+        roles: ['Admin', 'Super']
+      }, function afterInsert(err) {
+        assert.equal(err, undefined);
+      });
+      var flushFile = db.FlushCollection._dataHandler.dataHandlerDriver.flushFile;
+      var stats = fs.statSync(flushFile);
+      var originalFileSizeInBytes = stats["size"];
+      setTimeout(function() {
+          stats = fs.statSync(flushFile);
+          var fileSizeInBytes = stats["size"];
+          assert.notEqual(fileSizeInBytes, originalFileSizeInBytes);
+          console.log('sim');
+          return done();
+        }, 6000);
+    });
   });
 
 });

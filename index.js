@@ -75,7 +75,7 @@ module.exports.connect = function (collections, options, callback) {
     function validateDatabasePath(next) {
       util.fileSystem.exists(self._db._path, function afterCheck(exists) {
         if (!exists) {
-          console.error('Cannot access the following path: ' + self._db._path);
+          console.error('Cannot access the following path: %s', self._db._path);
           return callback(new Error('Cannot access the following path: ' + self._db._path));
         }
         return next();
@@ -88,16 +88,21 @@ module.exports.connect = function (collections, options, callback) {
       // in parallel initialize each collection
       async.each(collections, function attachOrCreate(collection, next) {
         var filePath = path.join(self._db._path, collection + '.json');
-        console.log('The following Collection is about to be attached: ' + collection);
+        console.log('The %s Collection is about to be attached', collection);
         util.fileSystem.exists(filePath, function afterCheck(exists) {
           if (!exists) {
             util.fileSystem.write(filePath, function afterWriteFile(err) {
               // we want to load into memory the file, so we need to create Collection object here
+              if (err) {
+                return next(err);
+              }
+              console.log('The File %s has been created', collection);
               self[collection] = new Collection({db: self, file: filePath});
-              return next(err);
+              return next();
             });
           } else {
             // the file exists we're good to go
+            console.log('The File %s has been attached', collection);
             self[collection] = new Collection({db: self, file: filePath});
             return next();
           }
@@ -107,7 +112,7 @@ module.exports.connect = function (collections, options, callback) {
           console.error('Collection names must not contain any extension or any character not allowed in a filename.');
           return callback(err);
         } else {
-          console.log('JSON collections database path is: ' + self._db._path);
+          console.log('JSON collections database path is %s', self._db._path);
           return callback(undefined, self);
         }
       });

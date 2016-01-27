@@ -50,7 +50,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
         name: generateRandomName(),
         id: n
       });
-      next();
+      return next();
     }, function after(err, iter) {
       if (err) {
         throw err;
@@ -84,7 +84,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
       }, function afterInsert(err, data) {
         assert.equal(err, undefined);
         assert.notEqual(data, undefined);
-        next(err);
+        return next(err);
       });
     }, function afterIteration(err, iter) {
       assert.equal(err, undefined);

@@ -23,6 +23,8 @@
     "db",
     "nosql",
     "inmemory",
+    "disk",
+    "io",
     "memory",
     "jsonfs",
     "database",
