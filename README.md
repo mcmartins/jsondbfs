@@ -143,12 +143,13 @@ database.Collection.remove(criteria, {multi: false}, callback);
 
 ## Driver options
 
-When initializing the Driver you can pass 3 options:
+When initializing the Driver you can pass 4 options:
 
 ```bash
 options.path - The path to store the collection files. Accepts a String. Defaults to '/tmp/'.
 options.driver - One of ['memory', 'disk'], defaults to disk
-options.flush - time interval to flush memory to disk, only used if driver is 'memory'
+options.memory.flush - if you want to flush it to disk, defaults to false, only used if driver is 'memory'
+options.memory.flushInterval - time interval to flush memory to disk defaults to 10s, only used if driver is 'memory'
 ```
 
 ## Collections options
