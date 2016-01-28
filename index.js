@@ -87,8 +87,8 @@ module.exports.connect = function (collections, options, callback) {
       }
       // in parallel initialize each collection
       async.each(collections, function attachOrCreate(collection, next) {
+        console.log('Collection \'%s\' is about to be attached', collection);
         var filePath = path.join(self._db._path, collection + '.json');
-        console.log('\'%s\' Collection is about to be attached', collection);
         util.fileSystem.exists(filePath, function afterCheck(exists) {
           if (!exists) {
             util.fileSystem.write(filePath, function afterWriteFile(err) {

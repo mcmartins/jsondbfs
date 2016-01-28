@@ -10,11 +10,11 @@
 
 # README
 
-JSON FileSystem Database is a JSON database such as MongoDB backed by FileSystem.<br/>
+JSON FileSystem Database is a JSON Document database, such as MongoDB.<br/>
+All methods are asynchronous and accessing / filtering is executed in parallel using [async](https://github.com/caolan/async).<br/><br/>
 Currently supports 2 types of data drivers: **Memory** and **Disk**.<br/>
 Memory driver is very performant. It is possible to flush data to disk (configurable).<br/>
-Disk driver is less performant an is implemented with **Pessimistic Transaction Locking** approach.<br/>
-All methods are asynchronous and accessing / filtering is executed in parallel using [async](https://github.com/caolan/async).<br/>
+Disk driver is less performant. Holds all data in disk, and reads/writes everytime you interact with the collection. Is implemented with **Pessimistic Transaction Locking** approach.<br/><br/>
 Based on [Jalalhejazi](https://github.com/Jalalhejazi), [jsonfs](https://github.com/Jalalhejazi/jsonfs).
 
 # Dependencies
@@ -113,7 +113,7 @@ Support for [Query and Projection Operators](https://docs.mongodb.org/manual/ref
     ...
 ```
 
-Support provided by [json-criteria](https://github.com/mirek/node-json-criteria).
+Support provided using [json-criteria](https://github.com/mirek/node-json-criteria).
 
 # Options
 
@@ -146,10 +146,10 @@ database.Collection.remove(criteria, {multi: false}, callback);
 When initializing the Driver you can pass 4 options:
 
 ```bash
-options.path - The path to store the collection files. Accepts a String. Defaults to '/tmp/'.
+options.path - The path to store the db collection files. Defaults to '/tmp/'.
 options.driver - One of ['memory', 'disk'], defaults to disk
-options.memory.flush - if you want to flush it to disk, defaults to false, only used if driver is 'memory'
-options.memory.flushInterval - time interval to flush memory to disk defaults to 10s, only used if driver is 'memory'
+options.memory.flush - if you want to flush it to disk, only used if driver is 'memory'. Defaults to false
+options.memory.flushInterval - Time interval to flush memory to disk, only used if driver is 'memory'. Defaults to 10000ms (10s)
 ```
 
 ## Collections options

@@ -98,7 +98,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should fail creating a connection to an invalid path', function test(done) {
-    JSONDBFSDriver.connect(['Collection'], {
+    JSONDBFSDriver.connect(['DiskCollection'], {
       path: '/invalid'
     }, function afterConnect(err, db) {
       assert.notEqual(err, undefined);
@@ -140,7 +140,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should create a new collection passing a non array as collection', function test(done) {
-    JSONDBFSDriver.connect('CollectionAsString', function afterConnect(err, db) {
+    JSONDBFSDriver.connect('DiskCollectionAsString', function afterConnect(err, db) {
       assert.equal(err, undefined);
       assert.notEqual(db, undefined);
       return done();
@@ -156,7 +156,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
   });
 
   it('should create a new collection using override options', function test(done) {
-    JSONDBFSDriver.connect(['Override'], {
+    JSONDBFSDriver.connect(['DiskOverride'], {
       path: '/tmp/',
       driver: 'disk'
     }, function afterConnect(err, db) {

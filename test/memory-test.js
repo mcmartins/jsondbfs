@@ -100,7 +100,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should fail creating a connection to an invalid path', function test(done) {
-    JSONDBFSDriver.connect(['Collection'], {
+    JSONDBFSDriver.connect(['MemoryCollection'], {
       path: '/invalid',
       driver: 'memory'
     }, function afterConnect(err, db) {
@@ -151,7 +151,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should create a new collection passing a non array as collection', function test(done) {
-    JSONDBFSDriver.connect('CollectionAsString', {
+    JSONDBFSDriver.connect('MemoryCollectionAsString', {
       driver: 'memory'
     }, function afterConnect(err, db) {
       assert.equal(err, undefined);
@@ -171,7 +171,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
   });
 
   it('should create a new collection using override options', function test(done) {
-    JSONDBFSDriver.connect(['Override'], {
+    JSONDBFSDriver.connect(['MemoryOverride'], {
       path: '/tmp/',
       driver: 'memory'
     }, function afterConnect(err, db) {
