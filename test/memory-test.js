@@ -370,7 +370,7 @@ describe('JSONDBFS Memory Driver', function testSpec() {
     });
   });
 
-  /*it('should ensure data is being flushed to disk', function test(done) {
+  it('should ensure data is being flushed to disk', function test(done) {
     this.timeout(10000);
     JSONDBFSDriver.connect(['FlushCollection'], {
       driver: 'memory',
@@ -396,6 +396,6 @@ describe('JSONDBFS Memory Driver', function testSpec() {
           return done();
         }, 6000);
     });
-  });*/
+  });
 
 });
