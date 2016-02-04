@@ -376,25 +376,25 @@ describe('JSONDBFS Memory Driver', function testSpec() {
       driver: 'memory',
       memory: {
         flush: true,
-        flushInterval: 3000
+        flushInterval: 5000
       }
     }, function afterConnect(err, db) {
       assert.equal(err, undefined);
+      var flushFile = db.FlushCollection._dataHandler.dataHandlerDriver.flushFile;
+      var stats = fs.statSync(flushFile);
+      var originalFileSizeInBytes = stats["size"];
       db.FlushCollection.insert({
         name: 'Manuel',
         roles: ['Admin', 'Super']
       }, function afterInsert(err) {
         assert.equal(err, undefined);
       });
-      var flushFile = db.FlushCollection._dataHandler.dataHandlerDriver.flushFile;
-      var stats = fs.statSync(flushFile);
-      var originalFileSizeInBytes = stats["size"];
       setTimeout(function() {
           stats = fs.statSync(flushFile);
           var fileSizeInBytes = stats["size"];
           assert.notEqual(fileSizeInBytes, originalFileSizeInBytes);
           return done();
-        }, 6000);
+        }, 8000);
     });
   });
 
