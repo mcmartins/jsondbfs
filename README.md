@@ -60,7 +60,7 @@ Criteria queries on JSON objects Mongo style [json-criteria](https://github.com/
     ...
   });
 
-  database.Users.findAndModify({name: 'Manuel'}, {name: 'Manuel Martins', token: 'xsf32S123ss'}, {retObj: true}, function(err, result){
+  database.Users.findAndModify({name: 'Manuel Martins'}, {name: 'Manuel Martins', token: 'f32S123'}, {retObj: true}, function(err, result){
     // updates a specified document based on a criteria
     // result is the updated document
     // withou retObj info on updated / insert { nMatched: 1, nModified: 1, nUpserted: 0 } is returned
