@@ -42,7 +42,9 @@
     "prototyping",
     "prototypingdb",
     "mongodb",
-    "mongo"
+    "mongo",
+    "async",
+    "lock"
   ],
   "dependencies": {
     "node-uuid": "1.4.x",
