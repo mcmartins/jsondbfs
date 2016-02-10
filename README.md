@@ -147,9 +147,9 @@ When initializing the Driver you can pass 4 options:
 
 ```bash
 options.path - The path to store the db collection files. Defaults to '/tmp/'.
-options.driver - One of ['memory', 'disk'], defaults to disk
-options.memory.flush - if you want to flush it to disk, only used if driver is 'memory'. Defaults to false
-options.memory.flushInterval - Time interval to flush memory to disk, only used if driver is 'memory'. Defaults to 10000ms (10s)
+options.driver - One of ['memory', 'disk'], defaults to 'disk'.
+options.memory.flush - If you want to flush the memory to disk. Only used if driver is 'memory'. Defaults to 'false'.
+options.memory.flushInterval - Time interval to flush memory to disk. Only used if driver is 'memory'. Defaults to '10000'ms. (10s)
 ```
 
 ## Collections options
@@ -157,9 +157,9 @@ options.memory.flushInterval - Time interval to flush memory to disk, only used 
 When updating a record you can pass 3 options:
 
 ```bash
-options.upsert - If record is not found and this options is set to true, a new record will be created. Accepts a boolean 'true' or 'false'. Defaults to 'false'.<br/>
+options.upsert - If record is not found and this options is set to true, a new record will be created. Accepts a boolean 'true' or 'false'. Defaults to 'false'.
 options.multi - Should update multiple records if they match. Accepts a boolean 'true' or 'false'. Defaults to 'true'.
-options.retObj - Set to true if you want to return the updated object, otherwise a stats object is returned with info on updated records (as with MongoDB)
+options.retObj - Set to true if you want to return the updated object, otherwise a stats object is returned with info on updated records (as with MongoDB).
 ```
 
 When removing or finding you can pass 1 option:
