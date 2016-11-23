@@ -47,12 +47,12 @@
     "lock"
   ],
   "dependencies": {
-    "node-uuid": "1.4.x",
-    "underscore": "1.8.x",
     "async": "1.5.x",
     "babel-polyfill": "6.3.x",
+    "json-criteria": "2.6.x",
     "lockfile": "1.0.x",
-    "json-criteria": "2.6.x"
+    "underscore": "1.8.x",
+    "uuid": "^3.0.0"
   },
   "devDependencies": {
     "codeclimate-test-reporter": "0.3.x",
