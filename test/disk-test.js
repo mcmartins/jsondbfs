@@ -45,7 +45,7 @@ describe('JSONDBFS Disk Driver', function testSpec() {
 
   before(function(done) {
     this.timeout(10000);
-    async.times(250000, function forEach(n, next) {
+    async.times(1400, function forEach(n, next) {
       data.push({
         name: generateRandomName(),
         id: n

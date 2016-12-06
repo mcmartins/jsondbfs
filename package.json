@@ -47,16 +47,16 @@
     "lock"
   ],
   "dependencies": {
-    "async": "1.5.x",
-    "babel-polyfill": "6.3.x",
+    "async": "2.1.x",
+    "babel-polyfill": "6.16.x",
     "json-criteria": "2.6.x",
     "lockfile": "1.0.x",
     "underscore": "1.8.x",
-    "uuid": "^3.0.0"
+    "uuid": "3.0.x"
   },
   "devDependencies": {
-    "codeclimate-test-reporter": "0.3.x",
+    "codeclimate-test-reporter": "0.4.x",
     "istanbul": "0.4.x",
-    "mocha": "2.4.x"
+    "mocha": "3.2.x"
   }
 }
