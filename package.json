@@ -48,7 +48,7 @@
   ],
   "dependencies": {
     "async": "2.1.x",
-    "babel-polyfill": "6.20.x",
+    "babel-polyfill": "6.23.x",
     "json-criteria": "2.6.x",
     "lockfile": "1.0.x",
     "underscore": "1.8.x",
